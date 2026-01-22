@@ -1,31 +1,20 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/user/application_security/secret_detection/pipeline/configure
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
+image: nixpkgs/nix-flakes:latest
+before_script:
+  - mkdir -p ~/.config/nix
+  - |
+    cat <<EOF >> ~/.config/nix/nix.conf
+    system-features = nixos-test benchmark big-parallel kvm
+    EOF
 stages:
-- build
-- test
-- deploy
-- review
-- dast
-- staging
-- canary
-- production
-- incremental rollout 10%
-- incremental rollout 25%
-- incremental rollout 50%
-- incremental rollout 100%
-- performance
-- cleanup
-- secret-detection
-sast:
-  stage: test
-include:
-- template: Auto-DevOps.gitlab-ci.yml
-variables:
-  SECRET_DETECTION_ENABLED: 'true'
-secret_detection:
-  stage: secret-detection
+  - nix-flake-check
+nix-flake-check:
+  stage: nix-flake-check
+  tags:
+    - docker
+  script:
+    - |
+      nix flake check \
+      --print-build-logs \
+      --accept-flake-config
+  variables:
+    FF_NETWORK_PER_BUILD: "true"

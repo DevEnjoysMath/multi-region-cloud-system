@@ -1,0 +1,13 @@
+{
+  "validation": {
+    "notDocumented": true,
+    "notExported": true
+  },
+  "treatWarningsAsErrors": true,
+  "treatValidationWarningsAsErrors": true,
+  "entryPointStrategy": "Expand",
+  "entryPoints": ["src/*"],
+  "packageOptions": {
+    "entryPoints": ["src/frontend.tsx"]
+  }
+}

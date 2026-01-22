@@ -3,10 +3,10 @@
 
   nixConfig = {
     extra-substituters = [
-      "https://cache.garnix.io"
+      "https://sweng-group-26.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
+      "sweng-group-26.cachix.org-1:n9ILenQ08eznmKvmoFrHxrGaP9DKNmIfv08AE852MzE="
     ];
   };
 

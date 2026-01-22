@@ -4,6 +4,9 @@ before_script:
   - |
     cat <<EOF >> ~/.config/nix/nix.conf
     system-features = nixos-test benchmark big-parallel kvm
+    accept-flake-config = true
+    extra-substituters = https://sweng-group-26.cachix.org
+    extra-trusted-public-keys = sweng-group-26.cachix.org-1:n9ILenQ08eznmKvmoFrHxrGaP9DKNmIfv08AE852MzE=
     EOF
 stages:
   - nix-flake-check
@@ -12,9 +15,6 @@ nix-flake-check:
   tags:
     - docker
   script:
-    - |
-      nix flake check \
-      --print-build-logs \
-      --accept-flake-config
+    - nix run .#ci --accept-flake-config
   variables:
     FF_NETWORK_PER_BUILD: "true"

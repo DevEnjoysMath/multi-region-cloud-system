@@ -1,30 +1,40 @@
+{ self, ... }:
 {
   perSystem =
     { pkgs, self', ... }:
     let
-      index = pkgs.runCommandLocal "docs-index" { } ''
-        mkdir -p "$out/share/docs"
+      docs = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {
+        name = "options-doc-html";
+        src = self;
 
-        cp ${./docs/index.html} $out/share/docs/index.html
-      '';
-    in
-    rec {
-      packages.docs = pkgs.symlinkJoin {
-        name = "docs";
-        paths = [
-          self'.packages.backend-docs
-          self'.packages.frontend-docs
-          index
+        nativeBuildInputs = [
+          pkgs.mdbook
         ];
+
+        dontBuild = true;
+        installPhase = ''
+          mkdir -p "$out/share/docs"
+
+          mdbook build ./docs --dest-dir "$out/share/docs"
+
+          rm "$out/share/docs/frontend" -rf
+          rm "$out/share/docs/backend" -rf
+
+          ln -sf "${self'.packages.frontend-docs}/share/docs/frontend" "$out/share/docs"
+          ln -sf "${self'.packages.backend-docs}/share/docs/backend" "$out/share/docs"
+        '';
 
         passthru.serve = pkgs.writeShellApplication {
           name = "serve-docs";
           runtimeInputs = [ pkgs.http-server ];
           text = ''
-            exec http-server "${packages.docs}/share/docs"
+            exec http-server "${finalAttrs.finalPackage}/share/docs"
           '';
         };
-      };
-      checks.docs = packages.docs;
+      });
+    in
+    {
+      packages = { inherit docs; };
+      checks = { inherit docs; };
     };
 }

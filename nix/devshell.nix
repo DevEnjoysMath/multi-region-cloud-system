@@ -14,6 +14,8 @@
 
           cachix
           omnix
+
+          mdbook
         ];
 
         shellHook = ''

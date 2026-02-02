@@ -72,6 +72,13 @@
                 type = types.str;
                 default = "127.0.0.1";
               };
+              port = mkOption {
+                description = ''
+                  backend database port
+                '';
+                type = types.port;
+                default = 5432;
+              };
             };
           };
           default = { };
@@ -103,9 +110,16 @@
           description = "backend Web Server";
           after = [
             "network.target"
-            "postgres.service"
           ];
           wantedBy = [ "multi-user.target" ];
+
+          environment = {
+            DB_HOST = cfg.database.addr;
+            DB_PORT = toString cfg.database.port;
+            DB_NAME = cfg.database.name;
+            DB_USER = cfg.database.user;
+            DB_PASSWORD = cfg.database.password;
+          };
 
           serviceConfig = {
             ExecStart = lib.getExe self.packages.${system}.backend;
@@ -129,13 +143,6 @@
             CapabilityBoundingSet = "";
             ProtectProc = "invisible";
           };
-        };
-
-        services.postgresql = {
-          enable = true;
-          initialScript = pkgs.writeText "psqlconf" ''
-            CREATE USER postgres SUPERUSER PASSWORD 'postgres';
-          '';
         };
       };
     };

@@ -49,7 +49,6 @@ import { Node } from "../components/js/node";
  * @returns {JSX.Element} Fullscreen Three.js canvas container.
  */
 export default function ThreeScene() {
-
   const mountRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -143,7 +142,6 @@ export default function ThreeScene() {
             label: "Details",
             onClick: () => console.log("Show details for NA"),
           },
-          
         ],
       });
 

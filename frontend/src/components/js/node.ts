@@ -36,61 +36,61 @@ function latLonToVector3(
  * Represents an interactive button displayed inside a Node label.
  */
 export interface NodeButton {
-    /**
-     * Text displayed on the button.
-     */
-    label: string;
-  
-    /**
-     * Click handler executed when the button is pressed.
-     */
-    onClick: () => void;
-  }
+  /**
+   * Text displayed on the button.
+   */
+  label: string;
+
+  /**
+   * Click handler executed when the button is pressed.
+   */
+  onClick: () => void;
+}
 
 /**
  * Configuration options used when creating a Node.
  */
 export interface NodeOptions {
-    /**
-     * Optional side alignment of the label.
-     * Currently reserved for future layout logic.
-     * @default "right"
-     */
-    side?: "left" | "right";
-  
-    /**
-     * Title displayed at the top of the label.
-     * @default "Node"
-     */
-    title?: string;
-  
-    /**
-     * Secondary descriptive text displayed below the title.
-     */
-    description?: string;
-  
-    /**
-     * Optional interactive buttons displayed inside the label.
-     */
-    buttons?: NodeButton[];
-  
-    /**
-     * Geographic latitude on Earth surface.
-     */
-    lat: number;
-  
-    /**
-     * Geographic longitude on Earth surface.
-     */
-    lon: number;
-  
-    /**
-     * Distance from Earth surface to floating label in world units.
-     * @default 6
-     */
-    floatDistance?: number;
-  }
-  
+  /**
+   * Optional side alignment of the label.
+   * Currently reserved for future layout logic.
+   * @default "right"
+   */
+  side?: "left" | "right";
+
+  /**
+   * Title displayed at the top of the label.
+   * @default "Node"
+   */
+  title?: string;
+
+  /**
+   * Secondary descriptive text displayed below the title.
+   */
+  description?: string;
+
+  /**
+   * Optional interactive buttons displayed inside the label.
+   */
+  buttons?: NodeButton[];
+
+  /**
+   * Geographic latitude on Earth surface.
+   */
+  lat: number;
+
+  /**
+   * Geographic longitude on Earth surface.
+   */
+  lon: number;
+
+  /**
+   * Distance from Earth surface to floating label in world units.
+   * @default 6
+   */
+  floatDistance?: number;
+}
+
 /**
  * Node
  * ----
@@ -131,7 +131,7 @@ export class Node {
   private basePosition: THREE.Vector3;
   private floatOffset: number;
   private floatDistance: number;
-      /**
+  /**
    * Creates a new floating geographic node.
    *
    * @param scene - The Three.js scene where label and line are added.
@@ -280,7 +280,7 @@ export class Node {
     const line = new THREE.Line(geometry, material);
     return line;
   }
-    /**
+  /**
    * Updates node position and animation.
    *
    * Should be called every frame inside the main animation loop.

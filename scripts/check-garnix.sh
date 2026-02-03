@@ -242,7 +242,7 @@ while true; do
     gum style --foreground 82 --border-foreground 82 --border normal --margin "1 0" --padding "0 2" \
       "🎉 All individual checks passed!"
     echo ""
-    
+
     # Success! All check suites passed, we can exit now
     echo ""
     gum style --foreground 82 --border-foreground 82 --border double --align center --width 60 --margin "1 2" --padding "2 4" \

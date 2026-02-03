@@ -242,6 +242,27 @@ while true; do
     gum style --foreground 82 --border-foreground 82 --border normal --margin "1 0" --padding "0 2" \
       "🎉 All individual checks passed!"
     echo ""
+    
+    # Success! All check suites passed, we can exit now
+    echo ""
+    gum style --foreground 82 --border-foreground 82 --border double --align center --width 60 --margin "1 2" --padding "2 4" \
+      "🎊 Success! 🎊" \
+      "" \
+      "All your code checks passed!" \
+      "" \
+      "This means:" \
+      "✅ Your code looks good" \
+      "✅ Everything is working properly" \
+      "✅ You're ready to go!" \
+      "" \
+      "Great work! 🌟"
+
+    echo ""
+    gum style --foreground 141 "📋 View all check details:"
+    gum style --foreground 87 "   https://github.com/${REPO}/commit/${SHA}/checks"
+    echo ""
+
+    exit 0
   else
     echo ""
     gum style --foreground 39 "ℹ️  No check suites found yet - they might still be starting up..."

@@ -2,6 +2,8 @@ stages: [verify]
 github_all_checks:
   stage: verify
   image: alpine:3.20
+  tags:
+    - docker
   variables:
     GITHUB_REPO: "YOUR_OWNER/YOUR_REPO" # owner/repo of the GitHub mirror
     GITHUB_CHECK_TIMEOUT: "900" # seconds

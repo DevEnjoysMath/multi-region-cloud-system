@@ -5,7 +5,7 @@ github_all_checks:
   tags:
     - docker
   variables:
-    GITHUB_REPO: "YOUR_OWNER/YOUR_REPO" # owner/repo of the GitHub mirror
+    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
     GITHUB_CHECK_TIMEOUT: "900" # seconds
     GITHUB_CHECK_INTERVAL: "15" # seconds
     # Treat these as "non-failing" conclusions for check suites/runs.

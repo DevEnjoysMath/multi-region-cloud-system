@@ -5,7 +5,7 @@ let
   mkSystem = modules: inputs.nixpkgs.lib.nixosSystem {
     system = "x86_64-linux";
     modules = modules ++ [
-      # include our custom modules
+      self.nixosModules.base
       self.nixosModules.backend
       self.nixosModules.postgres
     ];
@@ -16,34 +16,28 @@ in
   flake.nixosConfigurations = {
     # backend servers
     backend-a = mkSystem [
-      ./nodes/backend.nix
-      {
-        networking.hostName = "backend-a";
-        services.backend.database.addr = "db-coordinator.toast.internal";
-      }
+      self.nixosModules.backendNode
+      { networking.hostName = "backend-a"; }
     ];
 
     backend-b = mkSystem [
-      ./nodes/backend.nix
-      {
-        networking.hostName = "backend-b";
-        services.backend.database.addr = "db-coordinator.toast.internal";
-      }
+      self.nixosModules.backendNode
+      { networking.hostName = "backend-b"; }
     ];
 
     # database nodes
     db-coordinator = mkSystem [
-      ./nodes/db-coordinator.nix
+      self.nixosModules.dbCoordinator
       { networking.hostName = "db-coordinator"; }
     ];
 
     db-worker-1 = mkSystem [
-      ./nodes/db-worker.nix
+      self.nixosModules.dbWorker
       { networking.hostName = "db-worker-1"; }
     ];
 
     db-worker-2 = mkSystem [
-      ./nodes/db-worker.nix
+      self.nixosModules.dbWorker
       { networking.hostName = "db-worker-2"; }
     ];
   };

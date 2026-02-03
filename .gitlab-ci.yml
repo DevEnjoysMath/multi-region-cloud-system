@@ -1,6 +1,24 @@
-stages: [verify]
+stages: [mirror, verify]
+
+mirror_to_github:
+  stage: mirror
+  image: alpine:3.20
+  tags:
+    - docker
+  variables:
+    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
+  before_script:
+    - apk add --no-cache git
+  script:
+    - git remote add github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git 2>/dev/null || git remote set-url github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git
+    - git push github HEAD:${CI_COMMIT_BRANCH} --force
+  only:
+    - branches
+
 github_all_checks:
   stage: verify
+  needs:
+    - mirror_to_github
   image: alpine:3.20
   tags:
     - docker
@@ -41,13 +59,40 @@ github_all_checks:
       ok_list_json="$(printf '%s' "${OK_CONCLUSIONS}" | awk -v RS=',' 'NF{gsub(/^[ \t]+|[ \t]+$/, "", $0); print}' | jq -R . | jq -s .)"
 
       fetch_check_suites() {
-        curl -fsSL -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
-          "${API}/repos/${REPO}/commits/${SHA}/check-suites"
+        local http_code
+        http_code=$(curl -fsSL -w "%{http_code}" -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
+          -o /tmp/check_suites.json \
+          "${API}/repos/${REPO}/commits/${SHA}/check-suites" 2>/dev/null || echo "000")
+        echo "${http_code}"
       }
 
       fetch_combined_status() {
-        curl -fsSL -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
-          "${API}/repos/${REPO}/commits/${SHA}/status"
+        local http_code
+        http_code=$(curl -fsSL -w "%{http_code}" -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
+          -o /tmp/status.json \
+          "${API}/repos/${REPO}/commits/${SHA}/status" 2>/dev/null || echo "000")
+        echo "${http_code}"
+      }
+
+      handle_api_error() {
+        local endpoint="$1" http_code="$2"
+        case "${http_code}" in
+          404|422)
+            echo "ERROR: Commit ${SHA} not found on GitHub repository ${REPO}."
+            echo "Ensure this commit has been pushed to GitHub before running this job."
+            cat "/tmp/${endpoint}.json" 2>/dev/null | jq -r '.message // ""' || true
+            exit 1
+            ;;
+          401|403)
+            echo "ERROR: Authentication failed (${http_code}). Check GITHUB_TOKEN permissions."
+            cat "/tmp/${endpoint}.json" 2>/dev/null | jq -r '.message // ""' || true
+            exit 1
+            ;;
+          000)
+            echo "ERROR: Failed to connect to GitHub API. Network issue?"
+            exit 1
+            ;;
+        esac
       }
 
       start_ts="$(date +%s)"
@@ -63,7 +108,9 @@ github_all_checks:
         fi
 
         # 1) Checks API: check suites (this is the closest match to GitHub's "All checks")
-        suites_json="$(fetch_check_suites)"
+        suites_http="$(fetch_check_suites)"
+        handle_api_error "check_suites" "${suites_http}"
+        suites_json="$(cat /tmp/check_suites.json)"
         suite_total="$(echo "${suites_json}" | jq -r '.total_count // 0')"
 
         if [ "${suite_total}" -gt 0 ]; then
@@ -104,7 +151,9 @@ github_all_checks:
         fi
 
         # 2) Status API: combined status (covers classic contexts)
-        status_json="$(fetch_combined_status)"
+        status_http="$(fetch_combined_status)"
+        handle_api_error "status" "${status_http}"
+        status_json="$(cat /tmp/status.json)"
         state="$(echo "${status_json}" | jq -r '.state')"
         echo "Combined status state=${state}"
         echo "${status_json}" | jq -r '

@@ -214,7 +214,9 @@ while true; do
         "1. Click the links above to see what went wrong" \
         "2. Read the error messages" \
         "3. Fix the problems in your code" \
-        "4. Try again!"
+        "4. Try again!" \
+        "" \
+        "Hint: Try 'nix flake check' locally to reproduce this."
 
       echo ""
       gum style --foreground 196 "Failed checks:"

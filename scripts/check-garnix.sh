@@ -61,9 +61,9 @@ handle_api_error() {
     gum style --foreground 196 --border-foreground 196 --border double --align center --width 60 --margin "1 2" --padding "2 4" \
       "🔒 Permission Denied!" \
       "" \
-      "The special password (GITHUB_TOKEN) doesn't have permission to check the code." \
+      "The (GITHUB_TOKEN) doesn't have permission to check the code." \
       "" \
-      "Ask a grown-up to:" \
+      "Please:" \
       "1. Check the token is correct" \
       "2. Make sure it can read GitHub checks" \
       "3. Update it in GitLab settings"

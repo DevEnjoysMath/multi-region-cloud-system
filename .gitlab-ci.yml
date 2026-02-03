@@ -13,7 +13,7 @@ mirror_to_github:
     - git push github HEAD:${CI_COMMIT_BRANCH} --force
   only:
     - branches
-github_all_checks:
+garnix_checks:
   stage: verify
   needs:
     - mirror_to_github

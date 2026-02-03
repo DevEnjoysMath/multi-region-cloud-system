@@ -1,5 +1,4 @@
 stages: [mirror, verify]
-
 mirror_to_github:
   stage: mirror
   image: alpine:3.20
@@ -14,7 +13,6 @@ mirror_to_github:
     - git push github HEAD:${CI_COMMIT_BRANCH} --force
   only:
     - branches
-
 github_all_checks:
   stage: verify
   needs:
@@ -24,159 +22,10 @@ github_all_checks:
     - docker
   variables:
     GITHUB_REPO: "baileylu121/multi-region-cloud-system"
-    GITHUB_CHECK_TIMEOUT: "900" # seconds
-    GITHUB_CHECK_INTERVAL: "15" # seconds
-    # Treat these as "non-failing" conclusions for check suites/runs.
-    # If you truly want ONLY success, set this to just: success
+    GITHUB_CHECK_TIMEOUT: "900"
+    GITHUB_CHECK_INTERVAL: "15"
     OK_CONCLUSIONS: "success,neutral,skipped"
   before_script:
-    - |
-      for i in 1 2 3; do
-        apk update && apk add --no-cache curl jq && break
-        echo "Attempt $i failed, retrying..."
-        sleep 5
-      done
-    - |
-      if [ -z "${GITHUB_TOKEN:-}" ]; then
-        echo "ERROR: Set GITHUB_TOKEN in GitLab CI/CD variables."
-        exit 2
-      fi
+    - apk update && apk add --no-cache curl jq gum bash
   script:
-    - |
-      set -euo pipefail
-
-      SHA="${CI_COMMIT_SHA}"
-      REPO="${GITHUB_REPO}"
-      API="https://api.github.com"
-      AUTH="Authorization: Bearer ${GITHUB_TOKEN}"
-      ACCEPT="Accept: application/vnd.github+json"
-      UA="User-Agent: gitlab-github-all-checks-gate"
-
-      timeout_s="${GITHUB_CHECK_TIMEOUT}"
-      interval_s="${GITHUB_CHECK_INTERVAL}"
-
-      # Build a jq predicate for OK_CONCLUSIONS
-      ok_list_json="$(printf '%s' "${OK_CONCLUSIONS}" | awk -v RS=',' 'NF{gsub(/^[ \t]+|[ \t]+$/, "", $0); print}' | jq -R . | jq -s .)"
-
-      fetch_check_suites() {
-        local http_code
-        http_code=$(curl -fsSL -w "%{http_code}" -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
-          -o /tmp/check_suites.json \
-          "${API}/repos/${REPO}/commits/${SHA}/check-suites" 2>/dev/null || echo "000")
-        echo "${http_code}"
-      }
-
-      fetch_combined_status() {
-        local http_code
-        http_code=$(curl -fsSL -w "%{http_code}" -H "${AUTH}" -H "${ACCEPT}" -H "${UA}" \
-          -o /tmp/status.json \
-          "${API}/repos/${REPO}/commits/${SHA}/status" 2>/dev/null || echo "000")
-        echo "${http_code}"
-      }
-
-      handle_api_error() {
-        local endpoint="$1" http_code="$2"
-        case "${http_code}" in
-          404|422)
-            echo "ERROR: Commit ${SHA} not found on GitHub repository ${REPO}."
-            echo "Ensure this commit has been pushed to GitHub before running this job."
-            cat "/tmp/${endpoint}.json" 2>/dev/null | jq -r '.message // ""' || true
-            exit 1
-            ;;
-          401|403)
-            echo "ERROR: Authentication failed (${http_code}). Check GITHUB_TOKEN permissions."
-            cat "/tmp/${endpoint}.json" 2>/dev/null | jq -r '.message // ""' || true
-            exit 1
-            ;;
-          000)
-            echo "ERROR: Failed to connect to GitHub API. Network issue?"
-            exit 1
-            ;;
-        esac
-      }
-
-      start_ts="$(date +%s)"
-      echo "Gating on GitHub 'All checks' for ${REPO}@${SHA}"
-      echo "Timeout=${timeout_s}s Interval=${interval_s}s OK_CONCLUSIONS=${OK_CONCLUSIONS}"
-
-      while true; do
-        now_ts="$(date +%s)"
-        elapsed="$(( now_ts - start_ts ))"
-        if [ "${elapsed}" -ge "${timeout_s}" ]; then
-          echo "ERROR: Timed out waiting for GitHub checks to finish."
-          exit 1
-        fi
-
-        # 1) Checks API: check suites (this is the closest match to GitHub's "All checks")
-        suites_http="$(fetch_check_suites)"
-        handle_api_error "check_suites" "${suites_http}"
-        suites_json="$(cat /tmp/check_suites.json)"
-        suite_total="$(echo "${suites_json}" | jq -r '.total_count // 0')"
-
-        if [ "${suite_total}" -gt 0 ]; then
-          echo "Check suites:"
-          echo "${suites_json}" | jq -r '
-            .check_suites[]
-            | " - app=\(.app.slug // .app.name // "unknown") status=\(.status) conclusion=\(.conclusion // "null") url=\(.url)"
-          '
-
-          # Any suites still running?
-          suites_incomplete="$(echo "${suites_json}" | jq '[.check_suites[] | select(.status != "completed")] | length')"
-          if [ "${suites_incomplete}" -gt 0 ]; then
-            echo "Some check suites not completed yet (${suites_incomplete}). Waiting..."
-            sleep "${interval_s}"
-            continue
-          fi
-
-          # Any suite concluded with a failing conclusion?
-          suites_bad="$(echo "${suites_json}" | jq --argjson ok "${ok_list_json}" '
-            [ .check_suites[]
-              | select((.conclusion // "null") as $c | ($ok | index($c) | not))
-            ] | length
-          ')"
-
-          if [ "${suites_bad}" -gt 0 ]; then
-            echo "ERROR: One or more check suites concluded with a non-OK conclusion."
-            echo "${suites_json}" | jq --argjson ok "${ok_list_json}" -r '
-              .check_suites[]
-              | select((.conclusion // "null") as $c | ($ok | index($c) | not))
-              | "FAILED SUITE: app=\(.app.slug // .app.name // "unknown") conclusion=\(.conclusion // "null") url=\(.url)"
-            '
-            exit 1
-          fi
-
-          echo "OK: All check suites completed with OK conclusions."
-        else
-          echo "No check suites found for this commit (Checks API)."
-        fi
-
-        # 2) Status API: combined status (covers classic contexts)
-        status_http="$(fetch_combined_status)"
-        handle_api_error "status" "${status_http}"
-        status_json="$(cat /tmp/status.json)"
-        state="$(echo "${status_json}" | jq -r '.state')"
-        echo "Combined status state=${state}"
-        echo "${status_json}" | jq -r '
-          .statuses[]
-          | " - context=\(.context) state=\(.state) url=\(.target_url // "null") desc=\(.description // "null")"
-        '
-
-        case "${state}" in
-          success)
-            echo "OK: GitHub combined status is success. 'All checks' should be green."
-            exit 0
-            ;;
-          pending)
-            echo "Combined status pending. Waiting..."
-            sleep "${interval_s}"
-            ;;
-          failure|error)
-            echo "ERROR: GitHub combined status is ${state}."
-            exit 1
-            ;;
-          *)
-            echo "ERROR: Unexpected combined status state: ${state}"
-            exit 2
-            ;;
-        esac
-      done
+    - bash scripts/check-garnix.sh

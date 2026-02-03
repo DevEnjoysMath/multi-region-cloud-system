@@ -12,7 +12,12 @@ github_all_checks:
     # If you truly want ONLY success, set this to just: success
     OK_CONCLUSIONS: "success,neutral,skipped"
   before_script:
-    - apk add --no-cache curl jq
+    - |
+      for i in 1 2 3; do
+        apk update && apk add --no-cache curl jq && break
+        echo "Attempt $i failed, retrying..."
+        sleep 5
+      done
     - |
       if [ -z "${GITHUB_TOKEN:-}" ]; then
         echo "ERROR: Set GITHUB_TOKEN in GitLab CI/CD variables."

@@ -19,9 +19,11 @@
 
           rm "$out/share/docs/frontend" -rf
           rm "$out/share/docs/backend" -rf
+          rm "$out/share/docs/openapi" -rf
 
           ln -sf "${self'.packages.frontend-docs}/share/docs/frontend" "$out/share/docs"
           ln -sf "${self'.packages.backend-docs}/share/docs/backend" "$out/share/docs"
+          ln -sf "${self'.packages.openapi-docs}/share/docs/openapi" "$out/share/docs"
         '';
 
         passthru.serve = pkgs.writeShellApplication {

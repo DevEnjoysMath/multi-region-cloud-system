@@ -1,20 +1,31 @@
-image: nixpkgs/nix-flakes:latest
-before_script:
-  - mkdir -p ~/.config/nix
-  - |
-    cat <<EOF >> ~/.config/nix/nix.conf
-    system-features = nixos-test benchmark big-parallel kvm
-    accept-flake-config = true
-    extra-substituters = https://sweng-group-26.cachix.org
-    extra-trusted-public-keys = sweng-group-26.cachix.org-1:n9ILenQ08eznmKvmoFrHxrGaP9DKNmIfv08AE852MzE=
-    EOF
-stages:
-  - nix-flake-check
-nix-flake-check:
-  stage: nix-flake-check
+stages: [mirror, verify]
+mirror_to_github:
+  stage: mirror
+  image: alpine:3.20
   tags:
     - docker
-  script:
-    - nix run .#ci --accept-flake-config
   variables:
-    FF_NETWORK_PER_BUILD: "true"
+    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
+  before_script:
+    - apk add --no-cache git
+  script:
+    - git remote add github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git 2>/dev/null || git remote set-url github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git
+    - git push github HEAD:${CI_COMMIT_BRANCH} --force
+  only:
+    - branches
+garnix_checks:
+  stage: verify
+  needs:
+    - mirror_to_github
+  image: alpine:3.20
+  tags:
+    - docker
+  variables:
+    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
+    GITHUB_CHECK_TIMEOUT: "900"
+    GITHUB_CHECK_INTERVAL: "15"
+    OK_CONCLUSIONS: "success,neutral,skipped"
+  before_script:
+    - apk update && apk add --no-cache curl jq gum bash
+  script:
+    - bash scripts/check-garnix.sh

@@ -1,7 +1,12 @@
 # Distributed PostgreSQL with Citus extension
 _: {
   flake.nixosModules.postgres =
-    { config, lib, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       cfg = config.services.postgres-distributed;
     in
@@ -31,7 +36,7 @@ _: {
       config = lib.mkIf cfg.enable {
         services.postgresql = {
           enable = true;
-          package = lib.mkDefault (config.services.postgresql.package.withPackages (ps: [ ps.citus ]));
+          package = pkgs.postgresql_16.withPackages (ps: [ ps.citus ]);
           settings = {
             shared_preload_libraries = "citus";
             listen_addresses = lib.mkDefault "*";

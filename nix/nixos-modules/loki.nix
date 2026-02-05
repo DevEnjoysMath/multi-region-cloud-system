@@ -1,6 +1,5 @@
 # Loki log aggregation
-_:
-{
+_: {
   flake.nixosModules.loki =
     { config, lib, ... }:
     let

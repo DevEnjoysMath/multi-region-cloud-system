@@ -1,6 +1,5 @@
 # Base configuration shared by all nodes
-_:
-{
+_: {
   flake.nixosModules.base =
     { modulesPath, ... }:
     {

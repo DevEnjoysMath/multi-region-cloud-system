@@ -1,6 +1,5 @@
 # Prometheus metrics collection
-_:
-{
+_: {
   flake.nixosModules.prometheus =
     { config, lib, ... }:
     let

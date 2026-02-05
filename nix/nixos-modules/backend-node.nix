@@ -1,6 +1,5 @@
 # Backend server node configuration
-_:
-{
+_: {
   flake.nixosModules.backendNode =
     { lib, ... }:
     {

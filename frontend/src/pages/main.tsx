@@ -3,7 +3,6 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { loadObject, type SceneObject } from "../components/js/loader";
 import { Curve } from "../components/js/curve";
 
-
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x20a7db);
@@ -15,7 +14,7 @@ const camera = new THREE.PerspectiveCamera(
   45,
   window.innerWidth / window.innerHeight,
   0.1,
-  1000
+  1000,
 );
 
 camera.position.set(25, 15, 40);
@@ -24,16 +23,21 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
 
 const dLight = new THREE.DirectionalLight(0xffffff, 1);
-dLight.position.set(0, 10, 2);
+dLight.position.set(0, 3, 0);
 scene.add(dLight);
 
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-const earthGeometry = new THREE.SphereGeometry(10, 32, 32);
-const earthMaterial = new THREE.MeshStandardMaterial({ color: 0x2233ff });
-const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-scene.add(earth);
+let earth: THREE.Object3D | null = null;
+const earthObject: SceneObject = {
+  fileName: "/src/public/earth.gltf",
+  coords: new THREE.Vector3(10, 10, 10),
+};
+
+loadObject(earthObject, scene, (obj) => {
+  earth = obj;
+});
 
 let plane: THREE.Object3D | null = null;
 
@@ -73,7 +77,6 @@ function animate() {
 }
 
 animate();
-
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;

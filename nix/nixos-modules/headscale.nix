@@ -1,5 +1,5 @@
 # Headscale - self-hosted Tailscale coordination server
-{ ... }:
+_:
 {
   flake.nixosModules.headscale =
     { config, lib, ... }:
@@ -27,7 +27,7 @@
         services.headscale = {
           enable = true;
           address = "0.0.0.0";
-          port = cfg.port;
+          inherit (cfg) port;
 
           settings = {
             server_url = "http://headscale.${cfg.domain}:${toString cfg.port}";

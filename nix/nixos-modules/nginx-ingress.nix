@@ -1,5 +1,5 @@
 # nginx reverse proxy / load balancer for backend instances
-{ ... }:
+_:
 {
   flake.nixosModules.nginxIngress =
     { config, lib, ... }:
@@ -14,7 +14,10 @@
           description = "List of backend addresses to load balance across";
           type = lib.types.listOf lib.types.str;
           default = [ ];
-          example = [ "backend-a.toast.internal:8080" "backend-b.toast.internal:8080" ];
+          example = [
+            "backend-a.toast.internal:8080"
+            "backend-b.toast.internal:8080"
+          ];
         };
 
         domain = lib.mkOption {
@@ -35,10 +38,12 @@
           recommendedOptimisation = true;
 
           upstreams.backend = {
-            servers = builtins.listToAttrs (map (addr: {
-              name = addr;
-              value = { };
-            }) cfg.backends);
+            servers = builtins.listToAttrs (
+              map (addr: {
+                name = addr;
+                value = { };
+              }) cfg.backends
+            );
           };
 
           virtualHosts.${cfg.domain} = {
@@ -63,7 +68,10 @@
           };
         };
 
-        networking.firewall.allowedTCPPorts = [ 80 443 ];
+        networking.firewall.allowedTCPPorts = [
+          80
+          443
+        ];
       };
     };
 }

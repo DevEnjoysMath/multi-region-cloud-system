@@ -1,8 +1,8 @@
 # Ingress node - runs nginx as reverse proxy for the backend fleet
-{ ... }:
+_:
 {
   flake.nixosModules.ingressNode =
-    { ... }:
+    _:
     {
       services.toast-ingress = {
         enable = true;

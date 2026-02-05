@@ -1,5 +1,5 @@
 # Tailscale client - connects nodes to the Headscale mesh network
-{ ... }:
+_:
 {
   flake.nixosModules.tailscaleClient =
     { config, lib, ... }:
@@ -28,7 +28,7 @@
           enable = true;
           port = 41641;
           useRoutingFeatures = "client";
-          authKeyFile = cfg.authKeyFile;
+          inherit (cfg) authKeyFile;
           extraUpFlags = [
             "--login-server"
             cfg.headscaleUrl

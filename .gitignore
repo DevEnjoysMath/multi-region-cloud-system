@@ -15,3 +15,5 @@ data
 
 # Ignore backend binaries
 backend/bin
+
+.gitlab-ci-local

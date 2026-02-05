@@ -51,8 +51,17 @@ const server = serve({
           entrypoints: [filePath],
           target: "browser",
         });
+        if (transpiled.outputs.length === 0) {
+          console.error("Build failed, no outputs generated");
+          return new Response("Failed to transpile file", { status: 500 });
+        }
 
-        const output = await transpiled.outputs[0].text();
+        const firstOutput = transpiled.outputs[0];
+        if (!firstOutput) {
+          return new Response("No output generated", { status: 500 });
+        }
+
+        const output = await firstOutput.text();
         return new Response(output, {
           headers: { "Content-Type": "application/javascript" },
         });

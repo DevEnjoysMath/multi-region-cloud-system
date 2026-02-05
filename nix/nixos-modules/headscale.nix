@@ -1,6 +1,5 @@
 # Headscale - self-hosted Tailscale coordination server
-_:
-{
+_: {
   flake.nixosModules.headscale =
     { config, lib, ... }:
     let

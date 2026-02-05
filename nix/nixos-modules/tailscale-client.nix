@@ -1,6 +1,5 @@
 # Tailscale client - connects nodes to the Headscale mesh network
-_:
-{
+_: {
   flake.nixosModules.tailscaleClient =
     { config, lib, ... }:
     let

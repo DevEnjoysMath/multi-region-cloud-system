@@ -1,6 +1,5 @@
 # nginx reverse proxy / load balancer for backend instances
-_:
-{
+_: {
   flake.nixosModules.nginxIngress =
     { config, lib, ... }:
     let

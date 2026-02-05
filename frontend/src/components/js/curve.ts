@@ -58,7 +58,6 @@ export class Curve {
       this.pathObject.geometry.dispose();
       (this.pathObject.material as THREE.Material).dispose();
     }
-
     const tubeGeometry = new THREE.TubeGeometry(
       this.path,
       100, // tubular segments
@@ -66,7 +65,6 @@ export class Curve {
       8, // radial segments
       this.closed,
     );
-
     const tubeMaterial = new THREE.MeshStandardMaterial({ color });
     this.pathObject = new THREE.Mesh(tubeGeometry, tubeMaterial);
 
@@ -91,12 +89,9 @@ export class Curve {
   lookAt(object: THREE.Object3D, elapsedTime: number, speed = 0.2): void {
     if (!Number.isFinite(elapsedTime)) return;
     if (!this.path) return;
-
     const t = (elapsedTime * speed) % 1;
-
     const position = this.path.getPointAt(t);
     object.position.copy(position);
-
     const tangent = this.path.getTangentAt(t);
     object.lookAt(position.clone().add(tangent));
   }

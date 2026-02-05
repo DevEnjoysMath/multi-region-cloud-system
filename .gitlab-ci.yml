@@ -1,31 +1,32 @@
 stages: [mirror, verify]
+variables:
+  GUM_VERSION: "0.17.0"
+  JQ_VERSION: "1.7.1"
 mirror_to_github:
   stage: mirror
-  image: alpine:3.20
-  tags:
-    - docker
+  image: ubuntu:24.04
   variables:
-    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
+    GITHUB_REPO: "sweng-group-26-trinity/multi-region-cloud-system"
   before_script:
-    - apk add --no-cache git
+    - bash scripts/ubuntu-setup.sh
   script:
-    - git remote add github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git 2>/dev/null || git remote set-url github https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git
-    - git push github HEAD:${CI_COMMIT_BRANCH} --force
-  only:
-    - branches
+    - git remote add github "https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git" 2>/dev/null || git remote set-url github "https://oauth2:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
+    - git push github "HEAD:${CI_COMMIT_BRANCH}" --force
+  rules:
+    - if: $CI_COMMIT_BRANCH
 garnix_checks:
   stage: verify
   needs:
     - mirror_to_github
-  image: alpine:3.20
-  tags:
-    - docker
+  image: ubuntu:24.04
   variables:
-    GITHUB_REPO: "baileylu121/multi-region-cloud-system"
+    GITHUB_REPO: "sweng-group-26-trinity/multi-region-cloud-system"
     GITHUB_CHECK_TIMEOUT: "900"
     GITHUB_CHECK_INTERVAL: "15"
     OK_CONCLUSIONS: "success,neutral,skipped"
   before_script:
-    - apk update && apk add --no-cache curl jq gum bash
+    - bash scripts/ubuntu-setup.sh
   script:
     - bash scripts/check-garnix.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH

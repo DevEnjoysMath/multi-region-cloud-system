@@ -40,5 +40,19 @@ in
       self.nixosModules.dbWorker
       { networking.hostName = "db-worker-2"; }
     ];
+
+    # monitoring node (no backend or postgres needed)
+    monitoring = inputs.nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        self.nixosModules.base
+        self.nixosModules.prometheus
+        self.nixosModules.grafana
+        self.nixosModules.loki
+        self.nixosModules.monitoringNode
+        { networking.hostName = "monitoring"; }
+      ];
+      specialArgs = { inherit self inputs; };
+    };
   };
 }

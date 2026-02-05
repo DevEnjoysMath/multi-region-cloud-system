@@ -45,7 +45,7 @@ import { Node } from "../components/js/node";
  * - Cleans up animation frame, event listeners,
  *   controls, and renderers on unmount.
  *
- * @component
+ *
  * @returns {JSX.Element} Fullscreen Three.js canvas container.
  */
 export default function ThreeScene() {

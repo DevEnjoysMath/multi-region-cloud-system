@@ -35,7 +35,6 @@ export function loadObject(
   onLoad?: (obj: THREE.Object3D) => void,
 ): void {
   const loader = new GLTFLoader();
-
   loader.load(
     object.fileName,
 
@@ -56,7 +55,6 @@ export function loadObject(
         `${object.fileName}.loadObject(): Object loaded successfully!`,
       );
     },
-
     undefined,
 
     /**
@@ -76,7 +74,6 @@ export function loadObject(
         color: 0xff0000,
         wireframe: true,
       });
-
       const cube = new THREE.Mesh(geometry, material);
 
       cube.scale.copy(object.coords);

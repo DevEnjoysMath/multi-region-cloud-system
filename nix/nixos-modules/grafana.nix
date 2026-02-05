@@ -1,5 +1,5 @@
 # Grafana dashboard visualization
-{ ... }:
+_:
 {
   flake.nixosModules.grafana =
     { config, lib, ... }:

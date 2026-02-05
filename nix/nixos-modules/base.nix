@@ -1,5 +1,5 @@
 # Base configuration shared by all nodes
-{ ... }:
+_:
 {
   flake.nixosModules.base =
     { modulesPath, ... }:
@@ -22,7 +22,10 @@
 
       # nix settings
       nix.settings = {
-        experimental-features = [ "nix-command" "flakes" ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
         trusted-users = [ "root" ];
       };
 

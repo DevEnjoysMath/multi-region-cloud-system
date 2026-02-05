@@ -1,5 +1,5 @@
 # Prometheus metrics collection
-{ ... }:
+_:
 {
   flake.nixosModules.prometheus =
     { config, lib, ... }:
@@ -14,7 +14,10 @@
           description = "List of targets to scrape metrics from";
           type = lib.types.listOf lib.types.str;
           default = [ ];
-          example = [ "backend-a:8080" "backend-b:8080" ];
+          example = [
+            "backend-a:8080"
+            "backend-b:8080"
+          ];
         };
       };
 
@@ -26,15 +29,19 @@
           scrapeConfigs = [
             {
               job_name = "backend";
-              static_configs = [{
-                targets = cfg.scrapeTargets;
-              }];
+              static_configs = [
+                {
+                  targets = cfg.scrapeTargets;
+                }
+              ];
             }
             {
               job_name = "node";
-              static_configs = [{
-                targets = [ "localhost:9100" ];
-              }];
+              static_configs = [
+                {
+                  targets = [ "localhost:9100" ];
+                }
+              ];
             }
           ];
         };

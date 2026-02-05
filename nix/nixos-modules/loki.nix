@@ -1,5 +1,5 @@
 # Loki log aggregation
-{ ... }:
+_:
 {
   flake.nixosModules.loki =
     { config, lib, ... }:
@@ -36,16 +36,18 @@
             };
 
             schema_config = {
-              configs = [{
-                from = "2024-01-01";
-                store = "boltdb";
-                object_store = "filesystem";
-                schema = "v11";
-                index = {
-                  prefix = "index_";
-                  period = "168h";
-                };
-              }];
+              configs = [
+                {
+                  from = "2024-01-01";
+                  store = "boltdb";
+                  object_store = "filesystem";
+                  schema = "v11";
+                  index = {
+                    prefix = "index_";
+                    period = "168h";
+                  };
+                }
+              ];
             };
 
             storage_config = {
@@ -73,23 +75,29 @@
 
             positions.filename = "/var/lib/promtail/positions.yaml";
 
-            clients = [{
-              url = "http://localhost:3100/loki/api/v1/push";
-            }];
+            clients = [
+              {
+                url = "http://localhost:3100/loki/api/v1/push";
+              }
+            ];
 
-            scrape_configs = [{
-              job_name = "journal";
-              journal = {
-                max_age = "12h";
-                labels = {
-                  job = "systemd-journal";
+            scrape_configs = [
+              {
+                job_name = "journal";
+                journal = {
+                  max_age = "12h";
+                  labels = {
+                    job = "systemd-journal";
+                  };
                 };
-              };
-              relabel_configs = [{
-                source_labels = [ "__journal__systemd_unit" ];
-                target_label = "unit";
-              }];
-            }];
+                relabel_configs = [
+                  {
+                    source_labels = [ "__journal__systemd_unit" ];
+                    target_label = "unit";
+                  }
+                ];
+              }
+            ];
           };
         };
       };

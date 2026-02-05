@@ -6,8 +6,7 @@ let
     inherit hostname;
     profiles.system = {
       user = "root";
-      path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
-        self.nixosConfigurations.${hostname};
+      path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${hostname};
     };
   };
 in
@@ -27,7 +26,9 @@ in
   };
 
   # add deploy-rs checks to make sure configs are valid
-  perSystem = { system, ... }: {
-    checks = inputs.deploy-rs.lib.${system}.deployChecks self.deploy;
-  };
+  perSystem =
+    { system, ... }:
+    {
+      checks = inputs.deploy-rs.lib.${system}.deployChecks self.deploy;
+    };
 }

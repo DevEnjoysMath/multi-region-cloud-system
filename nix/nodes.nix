@@ -2,15 +2,17 @@
 { self, inputs, ... }:
 let
   # helper to create a nixos system config
-  mkSystem = modules: inputs.nixpkgs.lib.nixosSystem {
-    system = "x86_64-linux";
-    modules = modules ++ [
-      self.nixosModules.base
-      self.nixosModules.backend
-      self.nixosModules.postgres
-    ];
-    specialArgs = { inherit self inputs; };
-  };
+  mkSystem =
+    modules:
+    inputs.nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = modules ++ [
+        self.nixosModules.base
+        self.nixosModules.backend
+        self.nixosModules.postgres
+      ];
+      specialArgs = { inherit self inputs; };
+    };
 in
 {
   flake.nixosConfigurations = {

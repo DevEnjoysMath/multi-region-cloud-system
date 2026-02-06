@@ -112,3 +112,9 @@ We chose [React](https://react.dev/) as our frontend framework of choice.
 The backend is a typical [spring boot project](https://spring.io/).
 
 We use [Gradle](https://gradle.org/) as our build system as it is much faster than maven and has better lock-file capabilities making CI/CD reproducible builds less of a headache.
+
+### Before pushing
+
+Before you push your code run ``` nix fmt``` which will format your code remove whitespaces and will unify code formatting across the entire repository, regardless of language.
+
+Run ```nix flake check -L``` which will run all the tests in the repository.

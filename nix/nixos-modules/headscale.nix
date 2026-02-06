@@ -44,11 +44,25 @@ _: {
               v4 = "100.64.0.0/10";
               v6 = "fd7a:115c:a1e0::/48";
             };
+
+            # Use embedded DERP server instead of fetching from internet
+            derp = {
+              server = {
+                enabled = true;
+                region_id = 999;
+                region_code = "local";
+                region_name = "Local DERP";
+                stun_listen_addr = "0.0.0.0:3478";
+              };
+              urls = [ ];
+              auto_update_enabled = false;
+            };
           };
         };
 
-        # open headscale port
+        # open headscale and STUN ports
         networking.firewall.allowedTCPPorts = [ cfg.port ];
+        networking.firewall.allowedUDPPorts = [ 3478 ];
       };
     };
 }

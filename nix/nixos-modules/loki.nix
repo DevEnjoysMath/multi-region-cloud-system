@@ -38,9 +38,9 @@ _: {
               configs = [
                 {
                   from = "2024-01-01";
-                  store = "tsdb";
+                  store = "boltdb-shipper";
                   object_store = "filesystem";
-                  schema = "v13";
+                  schema = "v11";
                   index = {
                     prefix = "index_";
                     period = "24h";
@@ -51,10 +51,16 @@ _: {
 
             storage_config = {
               filesystem.directory = "/var/lib/loki/chunks";
-              tsdb_shipper = {
-                active_index_directory = "/var/lib/loki/tsdb-index";
-                cache_location = "/var/lib/loki/tsdb-cache";
+              boltdb_shipper = {
+                active_index_directory = "/var/lib/loki/boltdb-shipper-active";
+                cache_location = "/var/lib/loki/boltdb-shipper-cache";
+                shared_store = "filesystem";
               };
+            };
+
+            compactor = {
+              working_directory = "/var/lib/loki/compactor";
+              shared_store = "filesystem";
             };
 
             limits_config = {

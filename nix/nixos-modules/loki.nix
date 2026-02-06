@@ -54,13 +54,11 @@ _: {
               boltdb_shipper = {
                 active_index_directory = "/var/lib/loki/boltdb-shipper-active";
                 cache_location = "/var/lib/loki/boltdb-shipper-cache";
-                shared_store = "filesystem";
               };
             };
 
             compactor = {
               working_directory = "/var/lib/loki/compactor";
-              shared_store = "filesystem";
             };
 
             limits_config = {

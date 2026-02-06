@@ -7,6 +7,8 @@ let
     inputs.nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = modules ++ [
+        # Allow broken packages (Citus is marked broken with PG18 but works)
+        { nixpkgs.config.allowBroken = true; }
         self.nixosModules.base
         self.nixosModules.backend
         self.nixosModules.postgres

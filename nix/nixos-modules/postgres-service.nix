@@ -34,9 +34,6 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        # Allow broken packages (Citus is marked broken with PG18 but works)
-        nixpkgs.config.allowBroken = true;
-
         services.postgresql = {
           enable = true;
           package = pkgs.postgresql_18.withPackages (ps: [ ps.citus ]);

@@ -2,6 +2,8 @@
 
 - [Meeting Notes](./meetings.md)
   - [Toast Introduction](./meetings/toast_introduction.md)
+- [Infrastructure](./infrastructure/index.md)
+  - [Architecture](./infrastructure/architecture.md)
 - [Frontend Docs](./frontend/index.md)
 - [Backend Docs](./backend/index.md)
 - [`openapi` Docs](./openapi/index.md)

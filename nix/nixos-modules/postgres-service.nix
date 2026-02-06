@@ -40,6 +40,8 @@ _: {
           settings = {
             shared_preload_libraries = "citus";
             listen_addresses = lib.mkDefault "*";
+            # Use sslmode=prefer for Citus inter-node connections
+            "citus.node_conninfo" = "sslmode=prefer";
           };
           authentication = lib.mkForce ''
             local all all trust
@@ -48,6 +50,8 @@ _: {
             host all all 100.64.0.0/10 trust
             host all all 192.168.0.0/16 trust
             host all all 10.0.0.0/8 trust
+            hostssl all all 192.168.0.0/16 trust
+            hostssl all all 10.0.0.0/8 trust
           '';
         };
 

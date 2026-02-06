@@ -22,7 +22,7 @@
         settings.processes = {
           backend.command = ''
             cd "$FLAKE_ROOT/backend" &&
-            ${lib.getExe pkgs.gradle} bootRun --rerun-tasks
+            ${lib.getExe pkgs.gradle} bootRun --scan
           '';
           frontend.command = ''
             cd "$FLAKE_ROOT/frontend" &&
@@ -35,6 +35,7 @@
           enable = true;
           initialScript.before = ''
             CREATE USER postgres SUPERUSER PASSWORD 'postgres';
+            CREATE DATABASE sweng;
           '';
         };
       };

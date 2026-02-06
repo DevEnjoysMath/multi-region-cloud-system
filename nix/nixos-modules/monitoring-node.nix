@@ -1,6 +1,6 @@
 # Monitoring node - runs Prometheus, Grafana, and Loki
-_: {
-  flake.nixosModules.monitoringNode = _: {
+{
+  flake.nixosModules.monitoringNode = {
     # enable all monitoring services
     services.toast-prometheus = {
       enable = true;

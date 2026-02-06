@@ -1,6 +1,6 @@
 # Citus worker node configuration
-_: {
-  flake.nixosModules.dbWorker = _: {
+{
+  flake.nixosModules.dbWorker = {
     services.postgres-distributed = {
       enable = true;
       isCoordinator = false;

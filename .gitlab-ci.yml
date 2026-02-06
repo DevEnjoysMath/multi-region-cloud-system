@@ -7,6 +7,7 @@ mirror_to_github:
   image: ubuntu:24.04
   variables:
     GITHUB_REPO: "sweng-group-26-trinity/multi-region-cloud-system"
+    GIT_DEPTH: 0
   before_script:
     - bash scripts/ubuntu-setup.sh
   script:

@@ -38,25 +38,29 @@ _: {
               configs = [
                 {
                   from = "2024-01-01";
-                  store = "boltdb";
+                  store = "tsdb";
                   object_store = "filesystem";
-                  schema = "v11";
+                  schema = "v13";
                   index = {
                     prefix = "index_";
-                    period = "168h";
+                    period = "24h";
                   };
                 }
               ];
             };
 
             storage_config = {
-              boltdb.directory = "/var/lib/loki/index";
               filesystem.directory = "/var/lib/loki/chunks";
+              tsdb_shipper = {
+                active_index_directory = "/var/lib/loki/tsdb-index";
+                cache_location = "/var/lib/loki/tsdb-cache";
+              };
             };
 
             limits_config = {
               reject_old_samples = true;
               reject_old_samples_max_age = "168h";
+              allow_structured_metadata = false;
             };
           };
         };

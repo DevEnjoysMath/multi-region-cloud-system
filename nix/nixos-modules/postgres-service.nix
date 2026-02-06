@@ -98,9 +98,6 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        # Allow broken packages (Citus is marked broken with PG18 but works)
-        nixpkgs.config.allowBroken = true;
-
         # Open firewall for PostgreSQL
         networking.firewall.allowedTCPPorts = [ cfg.port ];
 

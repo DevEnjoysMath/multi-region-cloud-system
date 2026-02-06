@@ -45,7 +45,10 @@ _: {
           '';
           type = types.listOf types.str;
           default = [ ];
-          example = [ "10.0.0.2" "10.0.0.3" ];
+          example = [
+            "10.0.0.2"
+            "10.0.0.3"
+          ];
         };
 
         listenAddresses = mkOption {
@@ -106,7 +109,7 @@ _: {
           settings = {
             shared_preload_libraries = "citus";
             listen_addresses = cfg.listenAddresses;
-            port = cfg.port;
+            inherit (cfg) port;
 
             # Citus recommended settings
             "citus.node_conninfo" = "sslmode=prefer";

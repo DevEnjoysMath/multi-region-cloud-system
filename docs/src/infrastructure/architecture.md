@@ -10,11 +10,11 @@ This document explains how our system is designed to be highly available, secure
 
 Our architecture follows three core principles:
 
-| Principle | What it means |
-|-----------|---------------|
-| **High Availability** | The system stays online even if a server or entire region fails |
-| **Security by Default** | All internal traffic is encrypted; only web ports are public |
-| **Horizontal Scalability** | We can add more servers to handle increased load |
+| Principle                  | What it means                                                   |
+| -------------------------- | --------------------------------------------------------------- |
+| **High Availability**      | The system stays online even if a server or entire region fails |
+| **Security by Default**    | All internal traffic is encrypted; only web ports are public    |
+| **Horizontal Scalability** | We can add more servers to handle increased load                |
 
 ---
 
@@ -71,6 +71,7 @@ Our architecture follows three core principles:
 The ingress node is the **only** part of our system exposed to the internet.
 
 **Responsibilities:**
+
 - Terminates TLS/HTTPS connections
 - Load balances requests across backend servers
 - Rate limits to prevent abuse
@@ -85,14 +86,15 @@ We use **Headscale**, a self-hosted version of Tailscale, to create a private me
 
 **Why this approach?**
 
-| Traditional Approach | Our Approach |
-|----------------------|--------------|
-| Complex firewall rules | Simple: block everything except Tailscale |
-| VPN tunnels between regions | Automatic mesh between all nodes |
-| Public IPs on every server | Only ingress has public exposure |
-| Manual certificate management | WireGuard encryption built-in |
+| Traditional Approach          | Our Approach                              |
+| ----------------------------- | ----------------------------------------- |
+| Complex firewall rules        | Simple: block everything except Tailscale |
+| VPN tunnels between regions   | Automatic mesh between all nodes          |
+| Public IPs on every server    | Only ingress has public exposure          |
+| Manual certificate management | WireGuard encryption built-in             |
 
 **How it works:**
+
 - Every server runs the Tailscale client
 - Headscale (our control server) authenticates nodes
 - Nodes communicate via private `100.x.x.x` addresses
@@ -103,6 +105,7 @@ We use **Headscale**, a self-hosted version of Tailscale, to create a private me
 Stateless application servers that handle the business logic.
 
 **Key properties:**
+
 - Can be deployed in multiple regions for lower latency
 - Horizontally scalable (add more when needed)
 - Connect to database over the secure mesh
@@ -134,6 +137,7 @@ Citus extends PostgreSQL to distribute data across multiple servers.
 4. Results are combined and returned
 
 **Example:** When a customer orders from Restaurant #42:
+
 - Coordinator receives the query
 - Routes it to the worker holding Restaurant #42's data
 - Worker processes and returns the result
@@ -168,25 +172,27 @@ We deploy on AWS EC2 instances running NixOS.
 
 ### Instance Sizes
 
-| Role | Instance | Why |
-|------|----------|-----|
-| Headscale | t3.micro | Low resource needs, just coordination |
-| Ingress | t3.small | Handles TLS termination |
-| Backend | t3.medium | Application processing |
-| Citus Coordinator | t3.medium | Query routing |
-| Citus Workers | t3.medium | Data storage and queries |
+| Role              | Instance  | Why                                   |
+| ----------------- | --------- | ------------------------------------- |
+| Headscale         | t3.micro  | Low resource needs, just coordination |
+| Ingress           | t3.small  | Handles TLS termination               |
+| Backend           | t3.medium | Application processing                |
+| Citus Coordinator | t3.medium | Query routing                         |
+| Citus Workers     | t3.medium | Data storage and queries              |
 
 ### Security Groups
 
 Because of Tailscale, our firewall rules are minimal:
 
 **Ingress node:**
+
 ```
 Inbound:  80 (HTTP), 443 (HTTPS), 41641/UDP (Tailscale)
 Outbound: All (for Tailscale)
 ```
 
 **All other nodes:**
+
 ```
 Inbound:  41641/UDP (Tailscale only)
 Outbound: All (for Tailscale)
@@ -200,12 +206,13 @@ No database ports, no backend ports exposed to the internet.
 
 All infrastructure is defined as **NixOS modules** in our repository.
 
-| Module | Purpose |
-|--------|---------|
-| `backend-service.nix` | Backend application service |
+| Module                 | Purpose                      |
+| ---------------------- | ---------------------------- |
+| `backend-service.nix`  | Backend application service  |
 | `postgres-service.nix` | Citus distributed PostgreSQL |
 
 This means:
+
 - Infrastructure is version controlled
 - Deployments are reproducible
 - Configuration changes are atomic
@@ -215,16 +222,19 @@ This means:
 ## Handling Failures
 
 ### If a backend server fails:
+
 - nginx detects it via health checks
 - Traffic is routed to healthy backends
 - No customer impact
 
 ### If a database worker fails:
+
 - Queries to that shard will fail temporarily
 - Worker can rejoin and resync
 - Other shards continue working
 
 ### If an entire region fails:
+
 - Traffic shifts to the healthy region
 - May need to promote replica workers
 
@@ -232,12 +242,12 @@ This means:
 
 ## Security Summary
 
-| Attack Vector | Mitigation |
-|---------------|------------|
-| Network sniffing | All traffic encrypted (WireGuard) |
-| Unauthorized server access | Tailscale requires authentication |
-| Database exposed to internet | Database only accessible via mesh |
-| DDoS on backend | Only nginx is public; rate limiting enabled |
+| Attack Vector                | Mitigation                                  |
+| ---------------------------- | ------------------------------------------- |
+| Network sniffing             | All traffic encrypted (WireGuard)           |
+| Unauthorized server access   | Tailscale requires authentication           |
+| Database exposed to internet | Database only accessible via mesh           |
+| DDoS on backend              | Only nginx is public; rate limiting enabled |
 
 ---
 

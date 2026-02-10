@@ -1,5 +1,7 @@
 # README for "Name undecided"
 
+> See our documentation website [here](https://docs-server.main.multi-region-cloud-system.sweng-group-26-trinity.garnix.me/).
+
 TODO: description
 
 ## 1. Build and Run
@@ -82,6 +84,8 @@ Our CI is designed to be as annoying as possible in order to encourage us to cre
 ### Documentation
 
 We have automatic generation of code documentation in this repository via [Javadoc](https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javadoc.html) and [Typedoc](https://typedoc.org/).
+
+> There is a production version of our docs online [here](https://docs-server.main.multi-region-cloud-system.sweng-group-26-trinity.garnix.me/).
 
 View it in your browser with:
 

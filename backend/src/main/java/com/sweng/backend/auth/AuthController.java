@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/** REST controller for handling authentication-related requests. */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -16,6 +17,13 @@ public class AuthController {
   private final UserService userService;
   private final JwtUtil jwtUtil;
 
+  /**
+   * Constructs an AuthController with required dependencies.
+   *
+   * @param authenticationManager the authentication manager
+   * @param userService the user service
+   * @param jwtUtil the JWT utility
+   */
   public AuthController(
       AuthenticationManager authenticationManager, UserService userService, JwtUtil jwtUtil) {
     this.authenticationManager = authenticationManager;
@@ -23,6 +31,12 @@ public class AuthController {
     this.jwtUtil = jwtUtil;
   }
 
+  /**
+   * Registers a new user.
+   *
+   * @param signupRequest the signup request containing user details
+   * @return response entity indicating success or failure
+   */
   @PostMapping("/signup")
   public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
     try {
@@ -35,6 +49,12 @@ public class AuthController {
     }
   }
 
+  /**
+   * Authenticates a user and returns a JWT token.
+   *
+   * @param loginRequest the login request containing credentials
+   * @return response entity containing JWT token or error message
+   */
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     try {

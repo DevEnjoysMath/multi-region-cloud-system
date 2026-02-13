@@ -22,7 +22,7 @@
         settings.processes = {
           backend.command = ''
             cd "$FLAKE_ROOT/backend" &&
-            ${lib.getExe pkgs.gradle} bootRun --scan
+            ${lib.getExe pkgs.gradle_9} bootRun --scan
           '';
           frontend.command = ''
             cd "$FLAKE_ROOT/frontend" &&

@@ -4,16 +4,32 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+/** Service for managing user-related operations. */
 @Service
 public class UserService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
 
+  /**
+   * Constructs a UserService with required dependencies.
+   *
+   * @param userRepository the user repository
+   * @param passwordEncoder the password encoder
+   */
   public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
   }
 
+  /**
+   * Registers a new user.
+   *
+   * @param username the username
+   * @param email the email
+   * @param password the password
+   * @return the registered user
+   * @throws RuntimeException if username or email already exists
+   */
   public User registerUser(String username, String email, String password) {
     if (userRepository.existsByUsername(username)) {
       throw new RuntimeException("Username already exists");
@@ -27,6 +43,13 @@ public class UserService {
     return userRepository.save(user);
   }
 
+  /**
+   * Finds a user by username.
+   *
+   * @param username the username
+   * @return the user
+   * @throws RuntimeException if user not found
+   */
   public User findByUsername(String username) {
     return userRepository
         .findByUsername(username)

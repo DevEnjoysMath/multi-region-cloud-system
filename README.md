@@ -115,6 +115,6 @@ We use [Gradle](https://gradle.org/) as our build system as it is much faster th
 
 ### Before pushing
 
-Before you push your code run ``` nix fmt``` which will format your code remove whitespaces and will unify code formatting across the entire repository, regardless of language.
+Before you push your code run ` nix fmt` which will format your code remove whitespaces and will unify code formatting across the entire repository, regardless of language.
 
-Run ```nix flake check -L``` which will run all the tests in the repository.
+Run `nix flake check -L` which will run all the tests in the repository.

@@ -15,12 +15,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/** Configuration class for Spring Security. */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
   private final CustomUserDetailsService userDetailsService;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+  /**
+   * Constructs a SecurityConfig with required dependencies.
+   *
+   * @param userDetailsService the user details service
+   * @param jwtAuthenticationFilter the JWT authentication filter
+   */
   public SecurityConfig(
       CustomUserDetailsService userDetailsService,
       JwtAuthenticationFilter jwtAuthenticationFilter) {
@@ -28,11 +35,21 @@ public class SecurityConfig {
     this.jwtAuthenticationFilter = jwtAuthenticationFilter;
   }
 
+  /**
+   * Provides a password encoder bean.
+   *
+   * @return the password encoder
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * Provides an authentication provider bean.
+   *
+   * @return the authentication provider
+   */
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
@@ -40,11 +57,23 @@ public class SecurityConfig {
     return authProvider;
   }
 
+  /**
+   * Provides an authentication manager bean.
+   *
+   * @return the authentication manager
+   */
   @Bean
   public AuthenticationManager authenticationManager() {
     return new ProviderManager(authenticationProvider());
   }
 
+  /**
+   * Configures the security filter chain.
+   *
+   * @param http the HTTP security configuration
+   * @return the security filter chain
+   * @throws Exception if configuration fails
+   */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.csrf(csrf -> csrf.disable())

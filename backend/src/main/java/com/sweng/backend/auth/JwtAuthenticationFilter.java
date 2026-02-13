@@ -14,11 +14,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/** Filter for authenticating requests using JWT tokens. */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtUtil jwtUtil;
   private final CustomUserDetailsService userDetailsService;
 
+  /**
+   * Constructs a JwtAuthenticationFilter with required dependencies.
+   *
+   * @param jwtUtil the JWT utility
+   * @param userDetailsService the user details service
+   */
   public JwtAuthenticationFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
     this.jwtUtil = jwtUtil;
     this.userDetailsService = userDetailsService;

@@ -1,7 +1,20 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+/**
+ * LoginPage component.
+ *
+ * Renders the user login form.
+ * Allows users to:
+ * - Enter email and password
+ * - Navigate to forgot password page
+ * - Authenticate using Google
+ *
+ * This component connects to backend authentication
+ * through the login API hook.
+ */
 export function LoginPage() {
   return (
     <div className="w-full flex justify-center px-4">

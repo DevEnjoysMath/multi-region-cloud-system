@@ -1,8 +1,14 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 
+/**
+ * Root application component.
+ *
+ * Sets up application routing and page layout.
+ */
 export function App() {
   return (
     <BrowserRouter>

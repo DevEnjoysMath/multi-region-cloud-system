@@ -1,7 +1,18 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+/**
+ * ForgotPasswordPage component.
+ *
+ * Allows users to request a password reset.
+ * Users can submit their email address
+ * to receive reset instructions.
+ *
+ * This page integrates with the backend
+ * password recovery endpoint.
+ */
 export function ForgotPasswordPage() {
   return (
     <div className="w-full flex justify-center px-4">

@@ -1,8 +1,21 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSignup } from "../api/authhooks";
 
+/**
+ * SignupPage component.
+ *
+ * Provides user registration functionality.
+ * Allows users to:
+ * - Enter name, email, and password
+ * - Create a new account
+ * - Register using Google authentication
+ *
+ * Uses the useSignup API hook to communicate
+ * with the backend authentication service.
+ */
 export function SignupPage() {
   const { mutate, isPending, error } = useSignup();
 

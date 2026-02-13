@@ -12,10 +12,8 @@
           bun
           inputs'.bun2nix.packages.bun2nix
 
-          cachix
-          omnix
-
           mdbook
+          openapi-tui
         ];
 
         shellHook = ''

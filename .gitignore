@@ -17,3 +17,7 @@ data
 backend/bin
 
 .gitlab-ci-local
+# Local Postgres data (DO NOT COMMIT)
+backend/.pgdata*
+backend/.pglog*
+

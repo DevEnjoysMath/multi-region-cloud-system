@@ -2,6 +2,16 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { APITester } from "./pages/APITester";
+import OrdersPage from "./pages/OrdersPage";
+import "./index.css";
 
 /**
  * Root application component.
@@ -27,6 +37,28 @@ export function App() {
         </div>
       </div>
     </BrowserRouter>
+      <Card>
+        <CardHeader className="gap-4">
+          <CardTitle className="text-3xl font-bold">Bun + React</CardTitle>
+          <CardDescription>
+            Edit{" "}
+            <code className="rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono">
+              src/App.tsx
+            </code>{" "}
+            and save to test HMR
+          </CardDescription>
+</CardHeader>
+<CardContent>
+  <APITester />
+
+  <div className="mt-12">
+    <OrdersPage />
+  </div>
+
+</CardContent>
+</Card>
+
+    </div>
   );
 }
 

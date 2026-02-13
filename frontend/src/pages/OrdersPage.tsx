@@ -11,6 +11,9 @@ type CartItem = Product & {
   quantity: number;
 };
 
+/**
+ * Displays a restaurant ordering experience with a cart and checkout flow.
+ */
 export default function OrdersPage() {
   const [activeTab, setActiveTab] = useState<"food" | "drinks">("food");
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -58,8 +61,7 @@ export default function OrdersPage() {
       id: 6,
       name: "Chicken",
       price: 8.99,
-      image:
-        "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800",
+      image: "https://images.unsplash.com/photo-1562967916-eb82221dfb92?w=800",
     },
   ];
 
@@ -72,13 +74,12 @@ export default function OrdersPage() {
         "https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&w=1200&q=80",
     },
     {
-  id: 8,
-  name: "Sparkling Water",
-  price: 2.5,
-  image:
-    "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1200&q=80",
-},
-
+      id: 8,
+      name: "Sparkling Water",
+      price: 2.5,
+      image:
+        "https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=1200&q=80",
+    },
 
     {
       id: 9,
@@ -104,7 +105,9 @@ export default function OrdersPage() {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       }
       return [...prev, { ...product, quantity: 1 }];
@@ -125,7 +128,9 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-white p-10">
-      <h1 className="text-3xl font-bold text-orange-500 mb-8">Restaurant Orders</h1>
+      <h1 className="text-3xl font-bold text-orange-500 mb-8">
+        Restaurant Orders
+      </h1>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-10">
@@ -191,7 +196,9 @@ export default function OrdersPage() {
         <div className="w-96 bg-gray-50 p-6 rounded-xl shadow-sm">
           <h2 className="text-xl font-semibold mb-6">Cart</h2>
 
-          {cart.length === 0 && <p className="text-gray-500">No items added yet.</p>}
+          {cart.length === 0 && (
+            <p className="text-gray-500">No items added yet.</p>
+          )}
 
           {cart.map((item) => (
             <div key={item.id} className="flex justify-between mb-3">

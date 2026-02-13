@@ -28,7 +28,7 @@ export interface SignupRequest {
 export interface AuthResponse {
   /** JWT authentication token */
   token: string;
-   /** Authenticated user details */
+  /** Authenticated user details */
   user: {
     /** User ID */
     id: string;
@@ -51,7 +51,7 @@ export const login = (data: LoginRequest) =>
     body: JSON.stringify(data),
   });
 
-  /**
+/**
  * Sends signup request to backend authentication endpoint.
  *
  * @param data - Signup information (name, email, password)

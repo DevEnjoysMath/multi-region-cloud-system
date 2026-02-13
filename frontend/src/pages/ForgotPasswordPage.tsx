@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -17,11 +16,8 @@ export function ForgotPasswordPage() {
   return (
     <div className="w-full flex justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
-
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold">
-            Reset your password
-          </h1>
+          <h1 className="text-2xl font-semibold">Reset your password</h1>
           <p className="text-sm text-muted-foreground">
             Enter your email to receive a reset link.
           </p>
@@ -47,7 +43,6 @@ export function ForgotPasswordPage() {
             login
           </Link>
         </p>
-
       </div>
     </div>
   );

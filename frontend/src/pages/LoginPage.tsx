@@ -1,20 +1,23 @@
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Link, useNavigate } from "react-router-dom";
 
 /**
- * LoginPage component.
- *
- * Renders the user login form.
- * Allows users to:
- * - Enter email and password
- * - Navigate to forgot password page
- * - Authenticate using Google
- *
- * This component connects to backend authentication
- * through the login API hook.
+ * login stuff
+ * TODO FIX AUTHENTICATION!!!!
+ * right now just ignores input
+ * redirects to orders page
  */
 export function LoginPage() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // prevent page reload
+
+    
+    navigate("/orders");
+  };
+
   return (
     <div className="w-full flex justify-center px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
@@ -23,7 +26,7 @@ export function LoginPage() {
           <p className="text-sm text-muted-foreground">Welcome back 👋</p>
         </div>
 
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label>Email</Label>
             <input
@@ -51,7 +54,10 @@ export function LoginPage() {
             />
           </div>
 
-          <Button className="w-full h-11 bg-indigo-600 hover:bg-indigo-700">
+          <Button
+            type="submit"
+            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700"
+          >
             Sign in
           </Button>
         </form>
@@ -68,6 +74,7 @@ export function LoginPage() {
         <Button
           variant="outline"
           className="w-full flex items-center justify-center gap-3 h-11"
+          onClick={() => navigate("/orders")} // Google button also redirects
         >
           {/* Google SVG */}
           <svg

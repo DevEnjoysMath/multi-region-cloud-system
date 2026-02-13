@@ -128,6 +128,26 @@
         "type": "github"
       }
     },
+    "garnix-lib": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1758561011,
+        "narHash": "sha256-yYXd4qOH22Oe5PaaoGms0imXYweQeEeme+VUoMm4zwY=",
+        "owner": "garnix-io",
+        "repo": "garnix-lib",
+        "rev": "fbd9865a68c8f7f4bd9d4e136f27be04098fe1ee",
+        "type": "github"
+      },
+      "original": {
+        "owner": "garnix-io",
+        "repo": "garnix-lib",
+        "type": "github"
+      }
+    },
     "gradle2nix": {
       "inputs": {
         "flake-utils": "flake-utils_2",
@@ -217,6 +237,7 @@
         "deploy-rs": "deploy-rs",
         "flake-parts": "flake-parts",
         "flake-utils": "flake-utils",
+        "garnix-lib": "garnix-lib",
         "gradle2nix": "gradle2nix",
         "import-tree": "import-tree",
         "nixpkgs": "nixpkgs",

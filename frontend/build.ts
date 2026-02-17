@@ -3,6 +3,7 @@ import plugin from "bun-plugin-tailwind";
 import { existsSync } from "fs";
 import { rm } from "fs/promises";
 import path from "path";
+import { cp } from "fs/promises";
 
 if (process.argv.includes("--help") || process.argv.includes("-h")) {
   console.log(`
@@ -159,7 +160,9 @@ const outputTable = result.outputs.map((output) => ({
   Type: output.kind,
   Size: formatFileSize(output.size),
 }));
-
+await cp(path.join("src", "public"), path.join(outdir, "public"), {
+  recursive: true,
+});
 console.table(outputTable);
 const buildTime = (end - start).toFixed(2);
 

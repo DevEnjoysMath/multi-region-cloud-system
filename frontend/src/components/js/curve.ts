@@ -15,12 +15,11 @@ export class Curve {
   draw(
     scene: THREE.Scene,
     color: THREE.ColorRepresentation = 0xff0000,
-    radius = 0.2
+    radius = 0.2,
   ): boolean {
-
     if (this.points.length < 2) {
-        console.warn("Curve.draw(): not enough points");
-        return false;
+      console.warn("Curve.draw(): not enough points");
+      return false;
     }
 
     if (this.pathObject) {
@@ -34,7 +33,7 @@ export class Curve {
       100,
       radius,
       8,
-      this.closed
+      this.closed,
     );
 
     const tubeMaterial = new THREE.MeshStandardMaterial({ color });
@@ -48,12 +47,12 @@ export class Curve {
   lookAt(object: THREE.Object3D, elapsedTime: number, speed = 0.2): void {
     if (!Number.isFinite(elapsedTime)) return;
     if (!this.path) return;
-  
+
     const t = (elapsedTime * speed) % 1;
-  
+
     const position = this.path.getPointAt(t);
     object.position.copy(position);
-  
+
     const tangent = this.path.getTangentAt(t);
     object.lookAt(position.clone().add(tangent));
   }

@@ -9,7 +9,7 @@ export interface SceneObject {
 export function loadObject(
   object: SceneObject,
   scene: THREE.Scene,
-  onLoad?: (obj: THREE.Object3D) => void
+  onLoad?: (obj: THREE.Object3D) => void,
 ) {
   const loader = new GLTFLoader();
 
@@ -21,13 +21,18 @@ export function loadObject(
       mesh.scale.copy(object.coords);
       scene.add(mesh);
       onLoad?.(mesh);
-      console.log(object.fileName + ".loadObject(): Object loaded successfully!");
+      console.log(
+        object.fileName + ".loadObject(): Object loaded successfully!",
+      );
     },
 
     undefined,
 
     (error) => {
-      console.error(object.fileName + ".loadObject(): Error loading object:", error);
+      console.error(
+        object.fileName + ".loadObject(): Error loading object:",
+        error,
+      );
 
       const geometry = new THREE.BoxGeometry(1, 1, 1);
       const material = new THREE.MeshStandardMaterial({
@@ -41,6 +46,6 @@ export function loadObject(
       onLoad?.(cube);
 
       console.log(object.fileName + ".loadObject(): Cube loaded sadfully.");
-    }
+    },
   );
 }

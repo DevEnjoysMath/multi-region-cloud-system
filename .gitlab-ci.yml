@@ -1,14 +1,9 @@
-stages: [mirror, verify]
-
-variables:
-  GUM_VERSION: "0.17.0"
-  JQ_VERSION: "1.7.1"
-
 mirror_to_github:
   stage: mirror
   image: ubuntu:24.04
   tags:
     - docker
+  cache: []
   variables:
     GITHUB_REPO: "sweng-group-26-trinity/multi-region-cloud-system"
     GIT_DEPTH: 0
@@ -19,7 +14,6 @@ mirror_to_github:
     - git push github "HEAD:${CI_COMMIT_BRANCH}" --force
   rules:
     - if: $CI_COMMIT_BRANCH
-
 garnix_checks:
   stage: verify
   needs:
@@ -27,6 +21,7 @@ garnix_checks:
   image: ubuntu:24.04
   tags:
     - docker
+  cache: []
   variables:
     GITHUB_REPO: "sweng-group-26-trinity/multi-region-cloud-system"
     GITHUB_CHECK_TIMEOUT: "900"

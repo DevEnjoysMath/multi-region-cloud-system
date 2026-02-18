@@ -56,6 +56,15 @@
                 type = types.str;
                 default = "scss";
               };
+              password = mkOption {
+                description = ''
+                  backend database initial password.
+
+                  A real production system would overwrite this to a run time generated one at launch.
+                '';
+                type = types.str;
+                default = "scss";
+              };
               addr = mkOption {
                 description = ''
                   backend database ip address
@@ -77,9 +86,6 @@
       };
 
       config = lib.mkIf cfg.enable {
-        age.secrets.db-password = {
-          file = ../../secrets/db-password.age;
-        };
         systemd.targets.backend = {
           description = "backend Service";
           wantedBy = [ "multi-user.target" ];
@@ -112,14 +118,12 @@
             DB_PORT = toString cfg.database.port;
             DB_NAME = cfg.database.name;
             DB_USER = cfg.database.user;
+            DB_PASSWORD = cfg.database.password;
           };
 
-          script = ''
-            export DB_PASSWORD=$(cat ${config.age.secrets.db-password.path})
-            exec ${lib.getExe self.packages.${system}.backend}
-          '';
-
           serviceConfig = {
+            ExecStart = lib.getExe self.packages.${system}.backend;
+
             DynamicUser = true;
             CacheDirectory = "backend";
             WorkingDirectory = "/var/cache/backend";

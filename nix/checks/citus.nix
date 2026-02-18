@@ -8,12 +8,9 @@
       checks.citusCluster = pkgs.testers.runNixOSTest {
         name = "citus-cluster";
 
-        # Pass inputs so test nodes can import flake modules (e.g. ragenix)
-        extraSpecialArgs = { inherit inputs; };
-
         nodes = {
           postgres =
-            { inputs, ... }:
+            { ... }:
             {
               imports = [
                 self.nixosModules.postgres

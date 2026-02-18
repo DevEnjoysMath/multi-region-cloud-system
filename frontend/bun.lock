@@ -12,6 +12,7 @@
         "bun-plugin-tailwind": "^0.1.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
+        "framer-motion": "^12.34.2",
         "lucide-react": "^0.545.0",
         "react": "^19",
         "react-dom": "^19",
@@ -186,6 +187,8 @@
 
     "fflate": ["fflate@0.8.2", "", {}, "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A=="],
 
+    "framer-motion": ["framer-motion@12.34.2", "", { "dependencies": { "motion-dom": "^12.34.2", "motion-utils": "^12.29.2", "tslib": "^2.4.0" }, "peerDependencies": { "@emotion/is-prop-valid": "*", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" }, "optionalPeers": ["@emotion/is-prop-valid", "react", "react-dom"] }, "sha512-CcnYTzbRybm1/OE8QLXfXI8gR1cx5T4dF3D2kn5IyqsGNeLAKl2iFHb2BzFyXBGqESntDt6rPYl4Jhrb7tdB8g=="],
+
     "get-nonce": ["get-nonce@1.0.1", "", {}, "sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q=="],
 
     "linkify-it": ["linkify-it@5.0.0", "", { "dependencies": { "uc.micro": "^2.0.0" } }, "sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ=="],
@@ -201,6 +204,10 @@
     "meshoptimizer": ["meshoptimizer@0.22.0", "", {}, "sha512-IebiK79sqIy+E4EgOr+CAw+Ke8hAspXKzBd0JdgEmPHiAwmvEj2S4h1rfvo+o/BnfEYd/jAOg5IeeIjzlzSnDg=="],
 
     "minimatch": ["minimatch@9.0.5", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
+
+    "motion-dom": ["motion-dom@12.34.2", "", { "dependencies": { "motion-utils": "^12.29.2" } }, "sha512-n7gknp7gHcW7DUcmet0JVPLVHmE3j9uWwDp5VbE3IkCNnW5qdu0mOhjNYzXMkrQjrgr+h6Db3EDM2QBhW2qNxQ=="],
+
+    "motion-utils": ["motion-utils@12.29.2", "", {}, "sha512-G3kc34H2cX2gI63RqU+cZq+zWRRPSsNIOjpdl9TN4AQwC4sgwYPl/Q/Obf/d53nOm569T0fYK+tcoSV50BWx8A=="],
 
     "mri": ["mri@1.2.0", "", {}, "sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA=="],
 

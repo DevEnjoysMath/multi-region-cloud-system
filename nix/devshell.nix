@@ -17,7 +17,7 @@
           mdbook
           openapi-tui
 
-          age
+          rage
           inputs'.ragenix.packages.ragenix
         ];
 

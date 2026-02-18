@@ -6,6 +6,11 @@
 
   perSystem =
     { pkgs, ... }:
+    let
+      gradleWithJava25 = pkgs.gradle.override {
+        javaToolchains = [ pkgs.openjdk25 ];
+      };
+    in
     {
       process-compose.compose = {
         imports = [
@@ -22,7 +27,7 @@
         settings.processes = {
           backend.command = ''
             cd "$FLAKE_ROOT/backend" &&
-            ${lib.getExe pkgs.gradle_9} bootRun --scan
+            ${lib.getExe gradleWithJava25} bootRun --rerun-tasks
           '';
           frontend.command = ''
             cd "$FLAKE_ROOT/frontend" &&
@@ -33,6 +38,7 @@
 
         services.postgres."postgres" = {
           enable = true;
+          # Local dev only — production passwords managed by ragenix
           initialScript.before = ''
             CREATE USER postgres SUPERUSER PASSWORD 'postgres';
             CREATE DATABASE sweng;

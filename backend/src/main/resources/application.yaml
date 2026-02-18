@@ -12,6 +12,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,mappings
 jwt:
   secret: H3q5G0iAKz+gwJzlJTQIKIco7jZlP74GwtgRrMoBSQUa
   expiration: 86400000

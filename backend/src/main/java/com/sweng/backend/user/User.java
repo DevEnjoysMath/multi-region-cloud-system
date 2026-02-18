@@ -1,6 +1,7 @@
 package com.sweng.backend.user;
 
 import jakarta.persistence.*;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /** Entity representing a user in the system. */
@@ -22,6 +23,15 @@ public class User {
   @Column(nullable = false)
   private String passwordHash;
 
+  @Column(name = "created_at", nullable = false)
+  private OffsetDateTime createdAt;
+
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role")
+  private java.util.Set<Role> roles = new java.util.HashSet<>();
+
   /** Protected constructor for JPA. */
   protected User() {}
 
@@ -32,12 +42,15 @@ public class User {
    * @param username the username
    * @param email the email address
    * @param passwordHash the password hash
+   * @param createdAt the account creation timestamp
    */
-  public User(UUID uid, String username, String email, String passwordHash) {
+  public User(
+      UUID uid, String username, String email, String passwordHash, OffsetDateTime createdAt) {
     this.uid = uid;
     this.username = username;
     this.email = email;
     this.passwordHash = passwordHash;
+    this.createdAt = createdAt;
   }
 
   /**
@@ -47,6 +60,15 @@ public class User {
    */
   public UUID getUid() {
     return uid;
+  }
+
+  /**
+   * Gets the roles.
+   *
+   * @return the roles
+   */
+  public java.util.Set<Role> getRoles() {
+    return roles;
   }
 
   /**
@@ -77,6 +99,15 @@ public class User {
   }
 
   /**
+   * Gets the account creation timestamp.
+   *
+   * @return the account creation timestamp
+   */
+  public OffsetDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  /**
    * Sets the username.
    *
    * @param username the username to set
@@ -101,5 +132,14 @@ public class User {
    */
   public void setPasswordHash(String passwordHash) {
     this.passwordHash = passwordHash;
+  }
+
+  /**
+   * Sets the account creation timestamp.
+   *
+   * @param createdAt the account creation timestamp to set
+   */
+  public void setCreatedAt(OffsetDateTime createdAt) {
+    this.createdAt = createdAt;
   }
 }

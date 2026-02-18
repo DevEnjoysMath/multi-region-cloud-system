@@ -31,13 +31,17 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-    testImplementation("org.springframework.boot:spring-boot-starter-security-test")
+    testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
+    testImplementation("org.springframework:spring-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("com.h2database:h2") // <-- important
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     runtimeOnly("org.postgresql:postgresql")
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind")
 }
 
 tasks.withType<Test> { useJUnitPlatform() }

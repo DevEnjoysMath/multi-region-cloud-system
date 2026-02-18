@@ -25,3 +25,7 @@ backend/.pglog*
 # Google Cloud SDK (install locally, don't commit)
 google-cloud-sdk/
 google-cloud-cli-*.tar.gz
+backend/bun
+backend/headscale
+backend/monitoring
+

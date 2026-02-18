@@ -1,6 +1,5 @@
 package com.sweng.backend.user;
 
-import java.util.ArrayList;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,7 +26,15 @@ public class CustomUserDetailsService implements UserDetailsService {
             .findByUsername(username)
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
+    var authorities =
+        user.getRoles().stream()
+            .map(
+                role ->
+                    new org.springframework.security.core.authority.SimpleGrantedAuthority(
+                        "ROLE_" + role.name()))
+            .toList();
+
     return new org.springframework.security.core.userdetails.User(
-        user.getUsername(), user.getPasswordHash(), new ArrayList<>());
+        user.getUsername(), user.getPasswordHash(), authorities);
   }
 }

@@ -1,6 +1,6 @@
 # Integration test for Citus distributed PostgreSQL
 # Tests that Citus extension loads and basic functionality works
-{ self, ... }:
+{ self, inputs, ... }:
 {
   perSystem =
     { pkgs, ... }:
@@ -8,11 +8,19 @@
       checks.citusCluster = pkgs.testers.runNixOSTest {
         name = "citus-cluster";
 
+        # Pass inputs so test nodes can import flake modules (e.g. ragenix)
+        extraSpecialArgs = { inherit inputs; };
+
         nodes = {
           postgres =
-            { ... }:
+            { inputs, ... }:
             {
-              imports = [ self.nixosModules.postgres ];
+              imports = [
+                self.nixosModules.postgres
+                # Required so the `age` option exists; no secrets are
+                # actually decrypted because enableSecrets = false below
+                inputs.ragenix.nixosModules.default
+              ];
 
               services.postgres-distributed = {
                 enable = true;

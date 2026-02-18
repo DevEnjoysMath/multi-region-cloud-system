@@ -6,6 +6,9 @@
 # or `pkgs.callPackage` if you wish to handle
 # it manually.
 {
+  copyPathToStore,
+  fetchFromGitHub,
+  fetchgit,
   fetchurl,
   ...
 }:
@@ -326,6 +329,10 @@
     url = "https://registry.npmjs.org/fflate/-/fflate-0.8.2.tgz";
     hash = "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==";
   };
+  "framer-motion@12.34.2" = fetchurl {
+    url = "https://registry.npmjs.org/framer-motion/-/framer-motion-12.34.2.tgz";
+    hash = "sha512-CcnYTzbRybm1/OE8QLXfXI8gR1cx5T4dF3D2kn5IyqsGNeLAKl2iFHb2BzFyXBGqESntDt6rPYl4Jhrb7tdB8g==";
+  };
   "get-nonce@1.0.1" = fetchurl {
     url = "https://registry.npmjs.org/get-nonce/-/get-nonce-1.0.1.tgz";
     hash = "sha512-FJhYRoDaiatfEkUK8HKlicmu/3SGFD51q3itKDGoSTysQJBnfOcxU5GxnhE1E6soB76MbT0MBtnKJuXyAx+96Q==";
@@ -357,6 +364,14 @@
   "minimatch@9.0.5" = fetchurl {
     url = "https://registry.npmjs.org/minimatch/-/minimatch-9.0.5.tgz";
     hash = "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow==";
+  };
+  "motion-dom@12.34.2" = fetchurl {
+    url = "https://registry.npmjs.org/motion-dom/-/motion-dom-12.34.2.tgz";
+    hash = "sha512-n7gknp7gHcW7DUcmet0JVPLVHmE3j9uWwDp5VbE3IkCNnW5qdu0mOhjNYzXMkrQjrgr+h6Db3EDM2QBhW2qNxQ==";
+  };
+  "motion-utils@12.29.2" = fetchurl {
+    url = "https://registry.npmjs.org/motion-utils/-/motion-utils-12.29.2.tgz";
+    hash = "sha512-G3kc34H2cX2gI63RqU+cZq+zWRRPSsNIOjpdl9TN4AQwC4sgwYPl/Q/Obf/d53nOm569T0fYK+tcoSV50BWx8A==";
   };
   "mri@1.2.0" = fetchurl {
     url = "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz";

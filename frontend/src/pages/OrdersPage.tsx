@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type Product = {
   id: number;
@@ -19,6 +20,8 @@ export default function OrdersPage() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [showCheckout, setShowCheckout] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const navigate = useNavigate();
+
 
   // NOTE: These are fixed Unsplash photo IDs (more reliable than generic links)
   const food: Product[] = [
@@ -128,25 +131,34 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-white p-10">
-      <h1 className="text-3xl font-bold text-orange-500 mb-8">
-        Restaurant Orders
-      </h1>
+      {/* spacer to fix overlap with the logo */}
+      <div className="h-16" />
+
+      {/* health button TODO fix verticality? topbar? */}
+      <div className="flex justify-center mb-8">
+        <button
+          onClick={() => navigate("/health")}
+          className="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold
+                   shadow-md hover:bg-indigo-700 transition
+                   w-fit"
+        >
+          Health
+        </button>
+      </div>
 
       {/* Tabs */}
       <div className="flex gap-4 mb-10">
         <button
-          className={`px-6 py-2 rounded-full font-semibold transition ${
-            activeTab === "food" ? "bg-orange-500 text-white" : "bg-gray-200"
-          }`}
+          className={`px-6 py-2 rounded-full font-semibold transition ${activeTab === "food" ? "bg-orange-500 text-white" : "bg-gray-200"
+            }`}
           onClick={() => setActiveTab("food")}
         >
           Food
         </button>
 
         <button
-          className={`px-6 py-2 rounded-full font-semibold transition ${
-            activeTab === "drinks" ? "bg-orange-500 text-white" : "bg-gray-200"
-          }`}
+          className={`px-6 py-2 rounded-full font-semibold transition ${activeTab === "drinks" ? "bg-orange-500 text-white" : "bg-gray-200"
+            }`}
           onClick={() => setActiveTab("drinks")}
         >
           Drinks

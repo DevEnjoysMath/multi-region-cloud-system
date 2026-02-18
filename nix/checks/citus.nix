@@ -1,6 +1,6 @@
 # Integration test for Citus distributed PostgreSQL
 # Tests that Citus extension loads and basic functionality works
-{ self, inputs, ... }:
+{ self, ... }:
 {
   perSystem =
     { pkgs, ... }:
@@ -12,14 +12,12 @@
           postgres =
             { ... }:
             {
-              imports = [
-                self.nixosModules.postgres
-                inputs.ragenix.nixosModules.default
-              ];
+              imports = [ self.nixosModules.postgres ];
 
               services.postgres-distributed = {
                 enable = true;
                 isCoordinator = true;
+                enableSecrets = false;
               };
             };
         };

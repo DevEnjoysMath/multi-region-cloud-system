@@ -21,6 +21,15 @@ _: {
       options.services.postgres-distributed = {
         enable = mkEnableOption "Distributed PostgreSQL with Citus";
 
+        enableSecrets = mkOption {
+          description = ''
+            Whether to manage database passwords via age-encrypted secrets.
+            Disable this in test environments where no decryption key is available.
+          '';
+          type = types.bool;
+          default = true;
+        };
+
         isCoordinator = mkOption {
           description = ''
             Whether this node is the Citus coordinator.
@@ -90,14 +99,16 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        # Decrypt secrets at activation time
-        age.secrets.db-password = {
-          file = ../../secrets/db-password.age;
-          owner = "postgres";
-        };
-        age.secrets.db-superuser-password = {
-          file = ../../secrets/db-superuser-password.age;
-          owner = "postgres";
+        # Decrypt secrets at activation time (skipped in test environments)
+        age.secrets = lib.mkIf cfg.enableSecrets {
+          db-password = {
+            file = ../../secrets/db-password.age;
+            owner = "postgres";
+          };
+          db-superuser-password = {
+            file = ../../secrets/db-superuser-password.age;
+            owner = "postgres";
+          };
         };
 
         # Open firewall for PostgreSQL
@@ -190,8 +201,8 @@ _: {
               '';
         };
 
-        # Set database passwords from ragenix-decrypted secret files
-        systemd.services.postgres-secrets = {
+        # Set database passwords from ragenix-decrypted secret files (skipped in test environments)
+        systemd.services.postgres-secrets = lib.mkIf cfg.enableSecrets {
           description = "Set PostgreSQL passwords from secret files";
           after = [ "postgresql.service" ];
           requires = [ "postgresql.service" ];

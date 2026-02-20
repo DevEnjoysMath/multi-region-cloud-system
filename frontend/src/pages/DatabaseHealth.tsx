@@ -54,7 +54,6 @@ export default function ThreeScene() {
   const mountRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
@@ -200,22 +199,21 @@ export default function ThreeScene() {
   }, []);
 
   return (
-  <div className="relative w-screen h-screen">
-    {/* nav button to go to dashboardd */}
-    <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50">
-      <button
-        onClick={() => navigate("/dashboard")}
-        className="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold
+    <div className="relative w-screen h-screen">
+      {/* nav button to go to dashboardd */}
+      <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="px-6 py-2 rounded-full bg-indigo-600 text-white font-semibold
                    shadow-md hover:shadow-lg hover:bg-indigo-700
                    transition-all duration-200
                    hover:scale-[1.03] active:scale-[0.98]"
-      >
-        Dashboard
-      </button>
+        >
+          Dashboard
+        </button>
+      </div>
+
+      <div ref={mountRef} className="w-full h-full" />
     </div>
-
-    <div ref={mountRef} className="w-full h-full" />
-  </div>
-);
-
+  );
 }

@@ -64,6 +64,11 @@
     agenix-shell = {
       url = "github:aciceri/agenix-shell";
       inputs.nixpkgs.follows = "nixpkgs";
+    haskemathesis = {
+      url = "github:weyl-ai/haskemathesis";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+      inputs.flake-parts.follows = "flake-parts";
     };
   };
 

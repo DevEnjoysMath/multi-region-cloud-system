@@ -1,10 +1,11 @@
 # Base configuration shared by all nodes
 _: {
   flake.nixosModules.base =
-    { modulesPath, ... }:
+    { modulesPath, inputs, ... }:
     {
       imports = [
         "${modulesPath}/virtualisation/amazon-image.nix"
+        inputs.ragenix.nixosModules.default
       ];
 
       # allow ssh access for deployments

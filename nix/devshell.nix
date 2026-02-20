@@ -4,6 +4,8 @@
     {
       devShells.default = pkgs.mkShell {
         packages = with pkgs; [
+          git
+
           gradle_9
           spring-boot-cli
           openjdk25
@@ -14,6 +16,9 @@
 
           mdbook
           openapi-tui
+
+          rage
+          inputs'.ragenix.packages.ragenix
         ];
 
         shellHook = ''

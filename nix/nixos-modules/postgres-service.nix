@@ -21,6 +21,15 @@ _: {
       options.services.postgres-distributed = {
         enable = mkEnableOption "Distributed PostgreSQL with Citus";
 
+        enableSecrets = mkOption {
+          description = ''
+            Whether to manage database passwords via age-encrypted secrets.
+            Disable this in test environments where no decryption key is available.
+          '';
+          type = types.bool;
+          default = true;
+        };
+
         isCoordinator = mkOption {
           description = ''
             Whether this node is the Citus coordinator.
@@ -83,14 +92,6 @@ _: {
                 type = types.str;
                 default = "scss";
               };
-              password = mkOption {
-                description = ''
-                  Database initial password.
-                  A real production system would use secrets management.
-                '';
-                type = types.str;
-                default = "scss";
-              };
             };
           };
           default = { };
@@ -98,6 +99,18 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
+        # Decrypt secrets at activation time (skipped in test environments)
+        age.secrets = lib.mkIf cfg.enableSecrets {
+          db-password = {
+            file = ../../secrets/db-password.age;
+            owner = "postgres";
+          };
+          db-superuser-password = {
+            file = ../../secrets/db-superuser-password.age;
+            owner = "postgres";
+          };
+        };
+
         # Open firewall for PostgreSQL
         networking.firewall.allowedTCPPorts = [ cfg.port ];
 
@@ -133,11 +146,11 @@ _: {
           '';
 
           initialScript = pkgs.writeText "postgres-init" ''
-            -- Create superuser for administration
-            CREATE USER postgres SUPERUSER PASSWORD 'postgres';
+            -- Create superuser for administration (password set by postgres-secrets service)
+            CREATE USER postgres SUPERUSER;
 
-            -- Create application user and database
-            CREATE USER ${cfg.database.user} WITH PASSWORD '${cfg.database.password}';
+            -- Create application user and database (password set by postgres-secrets service)
+            CREATE USER ${cfg.database.user};
             CREATE DATABASE ${cfg.database.name} OWNER ${cfg.database.user};
 
             -- Connect to the application database and set up Citus
@@ -186,6 +199,34 @@ _: {
                 # They will be added by the coordinator
                 echo "Citus worker node ready at ${cfg.coordinatorAddress}:${toString cfg.port}"
               '';
+        };
+
+        # Set database passwords from ragenix-decrypted secret files (skipped in test environments)
+        systemd.services.postgres-secrets = lib.mkIf cfg.enableSecrets {
+          description = "Set PostgreSQL passwords from secret files";
+          after = [ "postgresql.service" ];
+          requires = [ "postgresql.service" ];
+          wantedBy = [ "multi-user.target" ];
+
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            User = "postgres";
+          };
+
+          script =
+            let
+              psql = lib.getExe' postgresWithCitus "psql";
+            in
+            ''
+              SUPERUSER_PASS=$(cat ${config.age.secrets.db-superuser-password.path})
+              DB_PASS=$(cat ${config.age.secrets.db-password.path})
+
+              ${psql} -c "ALTER USER postgres PASSWORD '$SUPERUSER_PASS';"
+              ${psql} -c "ALTER USER ${cfg.database.user} PASSWORD '$DB_PASS';"
+
+              echo "Database passwords set from secret files"
+            '';
         };
       };
     };

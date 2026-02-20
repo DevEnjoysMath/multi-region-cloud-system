@@ -1,6 +1,6 @@
 # Integration test for Citus distributed PostgreSQL
 # Tests that Citus extension loads and basic functionality works
-{ self, ... }:
+{ self, inputs, ... }:
 {
   perSystem =
     { pkgs, ... }:
@@ -12,11 +12,17 @@
           postgres =
             { ... }:
             {
-              imports = [ self.nixosModules.postgres ];
+              imports = [
+                self.nixosModules.postgres
+                # Required so the `age` option exists; no secrets are
+                # actually decrypted because enableSecrets = false below
+                inputs.ragenix.nixosModules.default
+              ];
 
               services.postgres-distributed = {
                 enable = true;
                 isCoordinator = true;
+                enableSecrets = false;
               };
             };
         };

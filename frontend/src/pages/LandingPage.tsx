@@ -19,7 +19,6 @@ export const LandingPage = () => {
   );
 };
 
-
 const styles = {
   container: {
     height: "100vh",

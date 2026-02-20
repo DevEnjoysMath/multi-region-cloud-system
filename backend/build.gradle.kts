@@ -56,3 +56,8 @@ tasks.withType<Javadoc> {
 }
 
 tasks.named<BootJar>("bootJar") { archiveFileName.set("backend.jar") }
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    // Enable auto-restart with DevTools
+    jvmArgs = listOf("-Dspring.devtools.restart.enabled=true")
+}

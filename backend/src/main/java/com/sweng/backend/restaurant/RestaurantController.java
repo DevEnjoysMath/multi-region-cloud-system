@@ -25,12 +25,24 @@ public class RestaurantController {
   private final RestaurantRepository repository;
   private final UserRepository userRepository;
 
-  /** Creates a controller instance. */
+  /**
+   * Creates a controller instance.
+   *
+   * @param repository the restaurant repository
+   * @param userRepository the user repository
+   */
   public RestaurantController(RestaurantRepository repository, UserRepository userRepository) {
     this.repository = repository;
     this.userRepository = userRepository;
   }
 
+  /**
+   * List restaurants with pagination.
+   *
+   * @param page the page number (0-indexed)
+   * @param size the page size
+   * @return paginated list of restaurants
+   */
   @GetMapping
   public ResponseEntity<RestaurantPageDto> getRestaurants(
       @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
@@ -51,14 +63,22 @@ public class RestaurantController {
     return ResponseEntity.ok(dto);
   }
 
+  /**
+   * Create a new restaurant.
+   *
+   * @param body the restaurant creation request
+   * @return the created restaurant
+   */
   @PostMapping
-  public ResponseEntity<RestaurantDto> createRestaurant(@Valid @RequestBody CreateRestaurantRequest body) {
+  public ResponseEntity<RestaurantDto> createRestaurant(
+      @Valid @RequestBody CreateRestaurantRequest body) {
     String username = currentUsernameOr401();
 
     var owner =
         userRepository
             .findByUsername(username)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
 
     RestaurantEntity e = new RestaurantEntity();
     e.setName(body.getName());
@@ -75,16 +95,50 @@ public class RestaurantController {
     return ResponseEntity.status(HttpStatus.CREATED).body(toDto(saved));
   }
 
+  /**
+   * Handle GET with empty restaurantId (trailing slash) - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @GetMapping("/")
+  public ResponseEntity<Void> getRestaurantNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurantId is required");
+  }
+
+  /**
+   * Get a specific restaurant by ID.
+   *
+   * @param restaurantId the restaurant ID
+   * @return the restaurant details
+   */
   @GetMapping("/{restaurantId}")
   public ResponseEntity<RestaurantDto> getRestaurant(@PathVariable String restaurantId) {
     UUID id = parseUuidOr400(restaurantId);
     RestaurantEntity found =
         repository
             .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
     return ResponseEntity.ok(toDto(found));
   }
 
+  /**
+   * Handle PUT with empty restaurantId - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @PutMapping({"", "/"})
+  public ResponseEntity<Void> updateRestaurantNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurantId is required");
+  }
+
+  /**
+   * Update an existing restaurant.
+   *
+   * @param restaurantId the restaurant ID to update
+   * @param body the update request body
+   * @return the updated restaurant
+   */
   @PutMapping("/{restaurantId}")
   public ResponseEntity<RestaurantDto> updateRestaurant(
       @PathVariable String restaurantId, @Valid @RequestBody UpdateRestaurantRequest body) {
@@ -93,7 +147,8 @@ public class RestaurantController {
     RestaurantEntity found =
         repository
             .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Restaurant not found"));
 
     if (body.getName() != null) found.setName(body.getName());
     if (body.getDescription() != null) found.setDescription(body.getDescription());
@@ -108,6 +163,22 @@ public class RestaurantController {
     return ResponseEntity.ok(toDto(saved));
   }
 
+  /**
+   * Handle DELETE with empty restaurantId - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @DeleteMapping({"", "/"})
+  public ResponseEntity<Void> deleteRestaurantNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurantId is required");
+  }
+
+  /**
+   * Delete a restaurant.
+   *
+   * @param restaurantId the restaurant ID to delete
+   * @return 204 No Content on success
+   */
   @DeleteMapping("/{restaurantId}")
   public ResponseEntity<Void> deleteRestaurant(@PathVariable String restaurantId) {
     UUID id = parseUuidOr400(restaurantId);

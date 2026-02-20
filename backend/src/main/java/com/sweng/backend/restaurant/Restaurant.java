@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
+/** JPA entity representing a restaurant (legacy model). */
 @Entity
 @Table(name = "restaurants")
 public class Restaurant {
 
-  @Id
-  private String id;
+  @Id private String id;
 
   @Column(nullable = false, length = 100)
   private String name;
@@ -32,6 +32,10 @@ public class Restaurant {
   private OffsetDateTime createdAt;
   private OffsetDateTime updatedAt;
 
+  /** Default constructor for JPA. */
+  public Restaurant() {}
+
+  /** Lifecycle callback triggered before first persist. Initializes ID and timestamps. */
   @PrePersist
   public void prePersist() {
     if (id == null) id = UUID.randomUUID().toString();
@@ -41,6 +45,7 @@ public class Restaurant {
     if (isActive == null) isActive = true;
   }
 
+  /** Lifecycle callback triggered before update. Updates the updatedAt timestamp. */
   @PreUpdate
   public void preUpdate() {
     updatedAt = OffsetDateTime.now();

@@ -4,7 +4,6 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
-
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -12,15 +11,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
     show-sql: false
-
   h2:
     console:
       enabled: false
-
 jwt:
   secret: testSecretKeyForTestingOnly1234567890abcdef
   expiration: 86400000
-
 logging:
   level:
     root: WARN

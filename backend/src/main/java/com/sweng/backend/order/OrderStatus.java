@@ -3,8 +3,7 @@ package com.sweng.backend.order;
 /**
  * Status values for an order.
  *
- * <p>Matches the OpenAPI enum for order status:
- * pending, preparing, ready, completed, cancelled.</p>
+ * <p>Matches the OpenAPI enum for order status: pending, preparing, ready, completed, cancelled.
  */
 public enum OrderStatus {
   /** Order has been created but not yet started. */

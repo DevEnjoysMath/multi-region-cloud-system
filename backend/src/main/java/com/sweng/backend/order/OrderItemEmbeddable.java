@@ -7,10 +7,13 @@ import java.math.BigDecimal;
 /**
  * Embeddable representation of a single item within an order.
  *
- * <p>Stored in the {@code order_items} collection table.</p>
+ * <p>Stored in the {@code order_items} collection table.
  */
 @Embeddable
 public class OrderItemEmbeddable {
+
+  /** Default constructor for JPA. */
+  public OrderItemEmbeddable() {}
 
   /** Identifier of the menu item. */
   @Column(nullable = false)
@@ -32,52 +35,92 @@ public class OrderItemEmbeddable {
   @Column(nullable = false, precision = 12, scale = 2)
   private BigDecimal subtotal;
 
-  /** @return item ID */
+  /**
+   * Gets the item ID.
+   *
+   * @return the item ID
+   */
   public String getItemId() {
     return itemId;
   }
 
-  /** @param itemId item ID */
+  /**
+   * Sets the item ID.
+   *
+   * @param itemId the item ID to set
+   */
   public void setItemId(String itemId) {
     this.itemId = itemId;
   }
 
-  /** @return item name */
+  /**
+   * Gets the item name.
+   *
+   * @return the item name
+   */
   public String getName() {
     return name;
   }
 
-  /** @param name item name */
+  /**
+   * Sets the item name.
+   *
+   * @param name the item name to set
+   */
   public void setName(String name) {
     this.name = name;
   }
 
-  /** @return quantity */
+  /**
+   * Gets the quantity.
+   *
+   * @return the quantity
+   */
   public int getQuantity() {
     return quantity;
   }
 
-  /** @param quantity quantity */
+  /**
+   * Sets the quantity.
+   *
+   * @param quantity the quantity to set
+   */
   public void setQuantity(int quantity) {
     this.quantity = quantity;
   }
 
-  /** @return unit price */
+  /**
+   * Gets the unit price.
+   *
+   * @return the unit price
+   */
   public BigDecimal getUnitPrice() {
     return unitPrice;
   }
 
-  /** @param unitPrice unit price */
+  /**
+   * Sets the unit price.
+   *
+   * @param unitPrice the unit price to set
+   */
   public void setUnitPrice(BigDecimal unitPrice) {
     this.unitPrice = unitPrice;
   }
 
-  /** @return subtotal */
+  /**
+   * Gets the subtotal.
+   *
+   * @return the subtotal
+   */
   public BigDecimal getSubtotal() {
     return subtotal;
   }
 
-  /** @param subtotal subtotal */
+  /**
+   * Sets the subtotal.
+   *
+   * @param subtotal the subtotal to set
+   */
   public void setSubtotal(BigDecimal subtotal) {
     this.subtotal = subtotal;
   }

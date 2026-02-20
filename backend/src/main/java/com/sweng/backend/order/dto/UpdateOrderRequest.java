@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Request body for updating an existing order.
  *
- * <p>Matches the OpenAPI {@code UpdateOrderRequest} schema.</p>
+ * <p>Matches the OpenAPI {@code UpdateOrderRequest} schema.
  */
 public class UpdateOrderRequest {
 
@@ -16,20 +16,19 @@ public class UpdateOrderRequest {
   private String customerName;
 
   /** Optional updated customer email. */
-  @Email
-  private String customerEmail;
+  @Email private String customerEmail;
 
   /**
    * Optional updated list of items.
    *
-   * <p>If provided, must contain at least one item.</p>
+   * <p>If provided, must contain at least one item.
    */
   private List<CreateOrderItemRequest> items;
 
   /**
    * Optional new order status.
    *
-   * <p>Allowed values: pending, preparing, ready, completed, cancelled.</p>
+   * <p>Allowed values: pending, preparing, ready, completed, cancelled.
    */
   private String status;
 
@@ -37,52 +36,95 @@ public class UpdateOrderRequest {
   @Size(max = 500)
   private String specialInstructions;
 
-  /** @return customerName */
+  /** Default constructor for deserialization. */
+  public UpdateOrderRequest() {}
+
+  /**
+   * Gets the customer name.
+   *
+   * @return the customer name
+   */
   public String getCustomerName() {
     return customerName;
   }
 
-  /** @param customerName customerName */
+  /**
+   * Sets the customer name.
+   *
+   * @param customerName the customer name to set
+   */
   public void setCustomerName(String customerName) {
     this.customerName = customerName;
   }
 
-  /** @return customerEmail */
+  /**
+   * Gets the customer email.
+   *
+   * @return the customer email
+   */
   public String getCustomerEmail() {
     return customerEmail;
   }
 
-  /** @param customerEmail customerEmail */
+  /**
+   * Sets the customer email.
+   *
+   * @param customerEmail the customer email to set
+   */
   public void setCustomerEmail(String customerEmail) {
     this.customerEmail = customerEmail;
   }
 
-  /** @return items */
+  /**
+   * Gets the list of order items.
+   *
+   * @return the list of items
+   */
   public List<CreateOrderItemRequest> getItems() {
     return items;
   }
 
-  /** @param items items */
+  /**
+   * Sets the list of order items.
+   *
+   * @param items the list of items to set
+   */
   public void setItems(List<CreateOrderItemRequest> items) {
     this.items = items;
   }
 
-  /** @return status */
+  /**
+   * Gets the order status.
+   *
+   * @return the order status
+   */
   public String getStatus() {
     return status;
   }
 
-  /** @param status status */
+  /**
+   * Sets the order status.
+   *
+   * @param status the order status to set
+   */
   public void setStatus(String status) {
     this.status = status;
   }
 
-  /** @return specialInstructions */
+  /**
+   * Gets the special instructions.
+   *
+   * @return the special instructions
+   */
   public String getSpecialInstructions() {
     return specialInstructions;
   }
 
-  /** @param specialInstructions specialInstructions */
+  /**
+   * Sets the special instructions.
+   *
+   * @param specialInstructions the special instructions to set
+   */
   public void setSpecialInstructions(String specialInstructions) {
     this.specialInstructions = specialInstructions;
   }

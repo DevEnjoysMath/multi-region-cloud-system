@@ -1,5 +1,9 @@
 package com.sweng.backend.order;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sweng.backend.order.dto.CreateOrderItemRequest;
 import com.sweng.backend.order.dto.CreateOrderRequest;
@@ -19,13 +23,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -43,10 +43,7 @@ class OrderApiIT {
 
   @BeforeEach
   void setup() {
-    this.mockMvc =
-        MockMvcBuilders.webAppContextSetup(context)
-            .apply(springSecurity())
-            .build();
+    this.mockMvc = MockMvcBuilders.webAppContextSetup(context).apply(springSecurity()).build();
 
     orderRepository.deleteAll();
     restaurantRepository.deleteAll();
@@ -98,7 +95,8 @@ class OrderApiIT {
     req.setRestaurantId(restaurantId.toString());
     req.setItems(List.of(buildItem("item-1", 1)));
 
-    mockMvc.perform(
+    mockMvc
+        .perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
@@ -108,14 +106,14 @@ class OrderApiIT {
   @Test
   @WithMockUser(username = "customerA", roles = "CUSTOMER")
   void createOrder_setsCustomerId_andDefaultsPending() throws Exception {
-    UUID expectedCustomerUid =
-        userRepository.findByUsername("customerA").orElseThrow().getUid();
+    UUID expectedCustomerUid = userRepository.findByUsername("customerA").orElseThrow().getUid();
 
     CreateOrderRequest req = new CreateOrderRequest();
     req.setRestaurantId(restaurantId.toString());
     req.setItems(List.of(buildItem("item-1", 2)));
 
-    mockMvc.perform(
+    mockMvc
+        .perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
@@ -134,7 +132,8 @@ class OrderApiIT {
     req.setRestaurantId(restaurantId.toString());
     req.setItems(List.of());
 
-    mockMvc.perform(
+    mockMvc
+        .perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
@@ -148,13 +147,15 @@ class OrderApiIT {
     req.setRestaurantId(restaurantId.toString());
     req.setItems(List.of(buildItem("item-1", 1)));
 
-    mockMvc.perform(
+    mockMvc
+        .perform(
             post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
         .andExpect(status().isCreated());
 
-    mockMvc.perform(get("/api/orders"))
+    mockMvc
+        .perform(get("/api/orders"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data").isArray());
   }
@@ -167,7 +168,8 @@ class OrderApiIT {
     create.setItems(List.of(buildItem("item-1", 1)));
 
     String response =
-        mockMvc.perform(
+        mockMvc
+            .perform(
                 post("/api/orders")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(create)))
@@ -181,7 +183,8 @@ class OrderApiIT {
     UpdateOrderRequest update = new UpdateOrderRequest();
     update.setSpecialInstructions("No onions");
 
-    mockMvc.perform(
+    mockMvc
+        .perform(
             put("/api/orders/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(update)))

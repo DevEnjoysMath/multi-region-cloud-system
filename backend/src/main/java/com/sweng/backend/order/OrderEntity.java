@@ -10,12 +10,15 @@ import java.util.UUID;
 /**
  * JPA entity representing a customer order.
  *
- * <p>Stores order header fields and embeds the list of ordered items via
- * {@link OrderItemEmbeddable}.</p>
+ * <p>Stores order header fields and embeds the list of ordered items via {@link
+ * OrderItemEmbeddable}.
  */
 @Entity
 @Table(name = "orders")
 public class OrderEntity {
+
+  /** Default constructor for JPA. */
+  public OrderEntity() {}
 
   /** Primary key for the order. */
   @Id
@@ -29,10 +32,9 @@ public class OrderEntity {
   /**
    * Authenticated customer who placed the order.
    *
-   * <p>May be null for guest orders, per spec.</p>
+   * <p>May be null for guest orders, per spec.
    */
-  @Column
-  private UUID customerId;
+  @Column private UUID customerId;
 
   /** Customer display name (optional). */
   @Column(length = 100)
@@ -68,10 +70,7 @@ public class OrderEntity {
   @CollectionTable(name = "order_items", joinColumns = @JoinColumn(name = "order_id"))
   private List<OrderItemEmbeddable> items = new ArrayList<>();
 
-  /**
-   * Lifecycle callback triggered before first persist.
-   * Initializes ID and timestamps.
-   */
+  /** Lifecycle callback triggered before first persist. Initializes ID and timestamps. */
   @PrePersist
   void onCreate() {
     if (id == null) {
@@ -91,121 +90,206 @@ public class OrderEntity {
     }
   }
 
-  /**
-   * Lifecycle callback triggered before update.
-   * Updates {@code updatedAt}.
-   */
+  /** Lifecycle callback triggered before update. Updates {@code updatedAt}. */
   @PreUpdate
   void onUpdate() {
     updatedAt = Instant.now();
   }
 
-  /** @return order ID */
+  /**
+   * Gets the order ID.
+   *
+   * @return the order ID
+   */
   public UUID getId() {
     return id;
   }
 
-  /** @param id order ID */
+  /**
+   * Sets the order ID.
+   *
+   * @param id the order ID to set
+   */
   public void setId(UUID id) {
     this.id = id;
   }
 
-  /** @return restaurant ID */
+  /**
+   * Gets the restaurant ID.
+   *
+   * @return the restaurant ID
+   */
   public UUID getRestaurantId() {
     return restaurantId;
   }
 
-  /** @param restaurantId restaurant ID */
+  /**
+   * Sets the restaurant ID.
+   *
+   * @param restaurantId the restaurant ID to set
+   */
   public void setRestaurantId(UUID restaurantId) {
     this.restaurantId = restaurantId;
   }
 
-  /** @return customer ID (may be null) */
+  /**
+   * Gets the customer ID.
+   *
+   * @return the customer ID (may be null)
+   */
   public UUID getCustomerId() {
     return customerId;
   }
 
-  /** @param customerId customer ID (may be null) */
+  /**
+   * Sets the customer ID.
+   *
+   * @param customerId the customer ID to set (may be null)
+   */
   public void setCustomerId(UUID customerId) {
     this.customerId = customerId;
   }
 
-  /** @return customer name */
+  /**
+   * Gets the customer name.
+   *
+   * @return the customer name
+   */
   public String getCustomerName() {
     return customerName;
   }
 
-  /** @param customerName customer name */
+  /**
+   * Sets the customer name.
+   *
+   * @param customerName the customer name to set
+   */
   public void setCustomerName(String customerName) {
     this.customerName = customerName;
   }
 
-  /** @return customer email */
+  /**
+   * Gets the customer email.
+   *
+   * @return the customer email
+   */
   public String getCustomerEmail() {
     return customerEmail;
   }
 
-  /** @param customerEmail customer email */
+  /**
+   * Sets the customer email.
+   *
+   * @param customerEmail the customer email to set
+   */
   public void setCustomerEmail(String customerEmail) {
     this.customerEmail = customerEmail;
   }
 
-  /** @return status */
+  /**
+   * Gets the order status.
+   *
+   * @return the order status
+   */
   public OrderStatus getStatus() {
     return status;
   }
 
-  /** @param status status */
+  /**
+   * Sets the order status.
+   *
+   * @param status the order status to set
+   */
   public void setStatus(OrderStatus status) {
     this.status = status;
   }
 
-  /** @return total amount */
+  /**
+   * Gets the total amount.
+   *
+   * @return the total amount
+   */
   public BigDecimal getTotalAmount() {
     return totalAmount;
   }
 
-  /** @param totalAmount total amount */
+  /**
+   * Sets the total amount.
+   *
+   * @param totalAmount the total amount to set
+   */
   public void setTotalAmount(BigDecimal totalAmount) {
     this.totalAmount = totalAmount;
   }
 
-  /** @return special instructions */
+  /**
+   * Gets the special instructions.
+   *
+   * @return the special instructions
+   */
   public String getSpecialInstructions() {
     return specialInstructions;
   }
 
-  /** @param specialInstructions special instructions */
+  /**
+   * Sets the special instructions.
+   *
+   * @param specialInstructions the special instructions to set
+   */
   public void setSpecialInstructions(String specialInstructions) {
     this.specialInstructions = specialInstructions;
   }
 
-  /** @return created timestamp */
+  /**
+   * Gets the creation timestamp.
+   *
+   * @return the creation timestamp
+   */
   public Instant getCreatedAt() {
     return createdAt;
   }
 
-  /** @param createdAt created timestamp */
+  /**
+   * Sets the creation timestamp.
+   *
+   * @param createdAt the creation timestamp to set
+   */
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
   }
 
-  /** @return updated timestamp */
+  /**
+   * Gets the last update timestamp.
+   *
+   * @return the last update timestamp
+   */
   public Instant getUpdatedAt() {
     return updatedAt;
   }
 
-  /** @param updatedAt updated timestamp */
+  /**
+   * Sets the last update timestamp.
+   *
+   * @param updatedAt the last update timestamp to set
+   */
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
   }
 
-  /** @return items list */
+  /**
+   * Gets the list of order items.
+   *
+   * @return the list of items
+   */
   public List<OrderItemEmbeddable> getItems() {
     return items;
   }
 
-  /** @param items items list */
+  /**
+   * Sets the list of order items.
+   *
+   * @param items the list of items to set
+   */
   public void setItems(List<OrderItemEmbeddable> items) {
     this.items = items;
   }

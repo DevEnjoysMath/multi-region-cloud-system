@@ -24,7 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 /**
  * REST controller for order endpoints.
  *
- * <p>Implements the OpenAPI Orders API using JPA persistence.</p>
+ * <p>Implements the OpenAPI Orders API using JPA persistence.
  */
 @RestController
 @RequestMapping("/api/orders")
@@ -53,7 +53,12 @@ public class OrderController {
   /**
    * List orders (optionally filtered by restaurantId, userId, status).
    *
-   * <p>Spec rule: users can only see their own orders unless ADMIN or RESTAURANT_OWNER.</p>
+   * <p>Spec rule: users can only see their own orders unless ADMIN or RESTAURANT_OWNER.
+   *
+   * @param restaurantId optional filter by restaurant ID
+   * @param userId optional filter by user ID
+   * @param status optional filter by order status
+   * @return list of orders wrapped in a data object
    */
   @GetMapping
   public ResponseEntity<?> getOrders(
@@ -70,7 +75,8 @@ public class OrderController {
     boolean isAdmin = auth.hasRole("ROLE_ADMIN");
     boolean isOwner = auth.hasRole("ROLE_RESTAURANT_OWNER");
 
-    UUID restaurantUuid = restaurantId != null ? parseUuidOr400(restaurantId, "restaurantId") : null;
+    UUID restaurantUuid =
+        restaurantId != null ? parseUuidOr400(restaurantId, "restaurantId") : null;
     UUID userUuid = userId != null ? parseUuidOr400(userId, "userId") : null;
     OrderStatus st = status != null ? parseStatusOr400(status) : null;
 
@@ -102,13 +108,17 @@ public class OrderController {
             .toList();
 
     // Spec response shape is { data: [...] }
-    return ResponseEntity.ok(java.util.Map.of("data", filtered.stream().map(OrderController::toDto).toList()));
+    return ResponseEntity.ok(
+        java.util.Map.of("data", filtered.stream().map(OrderController::toDto).toList()));
   }
 
   /**
    * Create a new order.
    *
-   * <p>Spec: customer must be authenticated; must contain at least one item.</p>
+   * <p>Spec: customer must be authenticated; must contain at least one item.
+   *
+   * @param body the order creation request
+   * @return the created order
    */
   @PostMapping
   public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequest body) {
@@ -122,7 +132,8 @@ public class OrderController {
     }
 
     if (body.getItems() == null || body.getItems().isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order must contain at least one item");
+      throw new ResponseStatusException(
+          HttpStatus.BAD_REQUEST, "Order must contain at least one item");
     }
 
     OrderEntity e = new OrderEntity();
@@ -139,7 +150,10 @@ public class OrderController {
 
     // Compute totals
     items.forEach(OrderController::computeSubtotalIfMissing);
-    BigDecimal total = items.stream().map(OrderItemEmbeddable::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal total =
+        items.stream()
+            .map(OrderItemEmbeddable::getSubtotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
 
     e.setItems(items);
     e.setTotalAmount(total);
@@ -148,7 +162,22 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body(toDto(saved));
   }
 
-  /** Get a specific order by ID with visibility rules. */
+  /**
+   * Handle GET with empty orderId (trailing slash) - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @GetMapping("/")
+  public ResponseEntity<Void> getOrderNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required");
+  }
+
+  /**
+   * Get a specific order by ID with visibility rules.
+   *
+   * @param orderId the order ID
+   * @return the order details
+   */
   @GetMapping("/{orderId}")
   public ResponseEntity<OrderDto> getOrder(@PathVariable String orderId) {
     AuthContext auth = requireAuth();
@@ -157,7 +186,8 @@ public class OrderController {
     OrderEntity found =
         orderRepository
             .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
     enforceVisibility(auth, found);
 
@@ -165,9 +195,23 @@ public class OrderController {
   }
 
   /**
+   * Handle PUT with empty orderId - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @PutMapping({"", "/"})
+  public ResponseEntity<Void> updateOrderNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required");
+  }
+
+  /**
    * Update an order.
    *
-   * <p>Spec: Only allowed for orders in 'pending' status unless user has ADMIN role.</p>
+   * <p>Spec: Only allowed for orders in 'pending' status unless user has ADMIN role.
+   *
+   * @param orderId the order ID to update
+   * @param body the update request body
+   * @return the updated order
    */
   @PutMapping("/{orderId}")
   public ResponseEntity<OrderDto> updateOrder(
@@ -179,7 +223,8 @@ public class OrderController {
     OrderEntity found =
         orderRepository
             .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
     enforceVisibility(auth, found);
 
@@ -191,16 +236,21 @@ public class OrderController {
 
     if (body.getCustomerName() != null) found.setCustomerName(body.getCustomerName());
     if (body.getCustomerEmail() != null) found.setCustomerEmail(body.getCustomerEmail());
-    if (body.getSpecialInstructions() != null) found.setSpecialInstructions(body.getSpecialInstructions());
+    if (body.getSpecialInstructions() != null)
+      found.setSpecialInstructions(body.getSpecialInstructions());
 
     if (body.getItems() != null) {
       if (body.getItems().isEmpty()) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Order must contain at least one item");
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Order must contain at least one item");
       }
       List<OrderItemEmbeddable> items =
           body.getItems().stream().map(OrderController::toEmbeddable).toList();
       items.forEach(OrderController::computeSubtotalIfMissing);
-      BigDecimal total = items.stream().map(OrderItemEmbeddable::getSubtotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+      BigDecimal total =
+          items.stream()
+              .map(OrderItemEmbeddable::getSubtotal)
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
       found.setItems(items);
       found.setTotalAmount(total);
     }
@@ -214,9 +264,22 @@ public class OrderController {
   }
 
   /**
+   * Handle DELETE with empty orderId - return 400.
+   *
+   * @return never returns normally, throws 400 error
+   */
+  @DeleteMapping({"", "/"})
+  public ResponseEntity<Void> deleteOrderNoId() {
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required");
+  }
+
+  /**
    * Delete (cancel) an order.
    *
-   * <p>Spec: Only the order owner or users with ADMIN/RESTAURANT_OWNER role can delete orders.</p>
+   * <p>Spec: Only the order owner or users with ADMIN/RESTAURANT_OWNER role can delete orders.
+   *
+   * @param orderId the order ID to delete
+   * @return 204 No Content on success
    */
   @DeleteMapping("/{orderId}")
   public ResponseEntity<Void> deleteOrder(@PathVariable String orderId) {
@@ -226,7 +289,8 @@ public class OrderController {
     OrderEntity found =
         orderRepository
             .findById(id)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+            .orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
 
     enforceVisibility(auth, found);
 
@@ -242,7 +306,9 @@ public class OrderController {
       return;
     }
 
-    if (auth.userUid == null || order.getCustomerId() == null || !auth.userUid.equals(order.getCustomerId())) {
+    if (auth.userUid == null
+        || order.getCustomerId() == null
+        || !auth.userUid.equals(order.getCustomerId())) {
       throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Forbidden");
     }
   }

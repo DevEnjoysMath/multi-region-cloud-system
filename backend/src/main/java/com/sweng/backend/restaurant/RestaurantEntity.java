@@ -7,13 +7,15 @@ import java.util.UUID;
 /**
  * JPA entity representing a restaurant in the system.
  *
- * <p>This entity maps to the {@code restaurants} table and stores
- * business information such as name, address, contact details,
- * ownership, and lifecycle timestamps.</p>
+ * <p>This entity maps to the {@code restaurants} table and stores business information such as
+ * name, address, contact details, ownership, and lifecycle timestamps.
  */
 @Entity
 @Table(name = "restaurants")
 public class RestaurantEntity {
+
+  /** Default constructor for JPA. */
+  public RestaurantEntity() {}
 
   /** Unique identifier for the restaurant (UUID primary key). */
   @Id
@@ -65,8 +67,8 @@ public class RestaurantEntity {
   private Instant updatedAt;
 
   /**
-   * Lifecycle callback triggered before the entity is first persisted.
-   * Initializes ID and timestamps.
+   * Lifecycle callback triggered before the entity is first persisted. Initializes ID and
+   * timestamps.
    */
   @PrePersist
   void onCreate() {
@@ -79,130 +81,226 @@ public class RestaurantEntity {
   }
 
   /**
-   * Lifecycle callback triggered before the entity is updated.
-   * Updates the {@code updatedAt} timestamp.
+   * Lifecycle callback triggered before the entity is updated. Updates the {@code updatedAt}
+   * timestamp.
    */
   @PreUpdate
   void onUpdate() {
     updatedAt = Instant.now();
   }
 
-  /** @return the restaurant UUID */
+  /**
+   * Gets the restaurant ID.
+   *
+   * @return the restaurant UUID
+   */
   public UUID getId() {
     return id;
   }
 
-  /** @param id the UUID to set */
+  /**
+   * Sets the restaurant ID.
+   *
+   * @param id the UUID to set
+   */
   public void setId(UUID id) {
     this.id = id;
   }
 
-  /** @return the restaurant name */
+  /**
+   * Gets the restaurant name.
+   *
+   * @return the restaurant name
+   */
   public String getName() {
     return name;
   }
 
-  /** @param name the restaurant name */
+  /**
+   * Sets the restaurant name.
+   *
+   * @param name the restaurant name to set
+   */
   public void setName(String name) {
     this.name = name;
   }
 
-  /** @return the description */
+  /**
+   * Gets the restaurant description.
+   *
+   * @return the description
+   */
   public String getDescription() {
     return description;
   }
 
-  /** @param description the description */
+  /**
+   * Sets the restaurant description.
+   *
+   * @param description the description to set
+   */
   public void setDescription(String description) {
     this.description = description;
   }
 
-  /** @return the address */
+  /**
+   * Gets the restaurant address.
+   *
+   * @return the address
+   */
   public String getAddress() {
     return address;
   }
 
-  /** @param address the physical address */
+  /**
+   * Sets the restaurant address.
+   *
+   * @param address the physical address to set
+   */
   public void setAddress(String address) {
     this.address = address;
   }
 
-  /** @return the phone number */
+  /**
+   * Gets the phone number.
+   *
+   * @return the phone number
+   */
   public String getPhone() {
     return phone;
   }
 
-  /** @param phone the contact phone */
+  /**
+   * Sets the phone number.
+   *
+   * @param phone the contact phone to set
+   */
   public void setPhone(String phone) {
     this.phone = phone;
   }
 
-  /** @return the email address */
+  /**
+   * Gets the email address.
+   *
+   * @return the email address
+   */
   public String getEmail() {
     return email;
   }
 
-  /** @param email the contact email */
+  /**
+   * Sets the email address.
+   *
+   * @param email the contact email to set
+   */
   public void setEmail(String email) {
     this.email = email;
   }
 
-  /** @return the cuisine type */
+  /**
+   * Gets the cuisine type.
+   *
+   * @return the cuisine type
+   */
   public String getCuisineType() {
     return cuisineType;
   }
 
-  /** @param cuisineType the cuisine type */
+  /**
+   * Sets the cuisine type.
+   *
+   * @param cuisineType the cuisine type to set
+   */
   public void setCuisineType(String cuisineType) {
     this.cuisineType = cuisineType;
   }
 
-  /** @return the opening hours */
+  /**
+   * Gets the opening hours.
+   *
+   * @return the opening hours
+   */
   public String getOpeningHours() {
     return openingHours;
   }
 
-  /** @param openingHours the opening hours string */
+  /**
+   * Sets the opening hours.
+   *
+   * @param openingHours the opening hours string to set
+   */
   public void setOpeningHours(String openingHours) {
     this.openingHours = openingHours;
   }
 
-  /** @return the owner UUID */
+  /**
+   * Gets the owner ID.
+   *
+   * @return the owner UUID
+   */
   public UUID getOwnerId() {
     return ownerId;
   }
 
-  /** @param ownerId the owner UUID */
+  /**
+   * Sets the owner ID.
+   *
+   * @param ownerId the owner UUID to set
+   */
   public void setOwnerId(UUID ownerId) {
     this.ownerId = ownerId;
   }
 
-  /** @return whether the restaurant is active */
+  /**
+   * Checks if the restaurant is active.
+   *
+   * @return true if the restaurant is active
+   */
   public boolean isActive() {
     return isActive;
   }
 
-  /** @param active whether the restaurant is active */
+  /**
+   * Sets the active status.
+   *
+   * @param active true to mark as active
+   */
   public void setActive(boolean active) {
     isActive = active;
   }
 
-  /** @return creation timestamp */
+  /**
+   * Gets the creation timestamp.
+   *
+   * @return the creation timestamp
+   */
   public Instant getCreatedAt() {
     return createdAt;
   }
 
-  /** @param createdAt creation timestamp */
+  /**
+   * Sets the creation timestamp.
+   *
+   * @param createdAt the creation timestamp to set
+   */
   public void setCreatedAt(Instant createdAt) {
     this.createdAt = createdAt;
   }
 
-  /** @return last update timestamp */
+  /**
+   * Gets the last update timestamp.
+   *
+   * @return the last update timestamp
+   */
   public Instant getUpdatedAt() {
     return updatedAt;
   }
 
-  /** @param updatedAt last update timestamp */
+  /**
+   * Sets the last update timestamp.
+   *
+   * @param updatedAt the last update timestamp to set
+   */
   public void setUpdatedAt(Instant updatedAt) {
     this.updatedAt = updatedAt;
   }

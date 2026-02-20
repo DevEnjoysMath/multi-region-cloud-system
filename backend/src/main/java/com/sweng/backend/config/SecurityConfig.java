@@ -2,8 +2,10 @@ package com.sweng.backend.config;
 
 import com.sweng.backend.auth.JwtAuthenticationFilter;
 import com.sweng.backend.user.CustomUserDetailsService;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -14,11 +16,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /** Configuration class for Spring Security. */
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
   private final CustomUserDetailsService userDetailsService;
@@ -83,36 +86,41 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/auth/**", "/auth/**")
+                auth.requestMatchers("/api/auth/**")
                     .permitAll()
                     .requestMatchers("/actuator/**")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.GET,
-                        "/api/restaurants/**",
-                        "/restaurants/**")
+                    .requestMatchers("/error")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.POST,
-                        "/api/restaurants/**",
-                        "/restaurants/**")
-                    .hasRole("ADMIN")
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.PUT,
-                        "/api/restaurants/**",
-                        "/restaurants/**")
-                    .hasRole("ADMIN")
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.DELETE,
-                        "/api/restaurants/**",
-                        "/restaurants/**")
-                    .hasRole("ADMIN")
+                    .requestMatchers("/api/restaurants/**")
+                    .permitAll()
+                    .requestMatchers("/api/orders", "/api/orders/**")
+                    .authenticated()
                     .anyRequest()
                     .authenticated());
+
+    http.exceptionHandling(
+        ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
     http.authenticationProvider(authenticationProvider());
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
+  }
+
+  /**
+   * Prevents JwtAuthenticationFilter from being auto-registered as a servlet filter. It should only
+   * run within the Spring Security filter chain.
+   *
+   * @param filter the JWT authentication filter
+   * @return the filter registration bean with registration disabled
+   */
+  @Bean
+  public FilterRegistrationBean<JwtAuthenticationFilter> jwtFilterRegistration(
+      JwtAuthenticationFilter filter) {
+    FilterRegistrationBean<JwtAuthenticationFilter> registration =
+        new FilterRegistrationBean<>(filter);
+    registration.setEnabled(false);
+    return registration;
   }
 }

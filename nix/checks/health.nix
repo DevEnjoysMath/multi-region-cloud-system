@@ -1,13 +1,19 @@
 { self, ... }:
+let
+  openapiSpec = "${self}/specs/openapi.yaml";
+in
 {
   perSystem =
-    { pkgs, ... }:
+    { pkgs, inputs', ... }:
     {
       checks.healthCheck = pkgs.testers.runNixOSTest {
         name = "health-check";
         nodes.machine = {
           imports = [
             self.nixosModules.backend
+          ];
+          environment.systemPackages = [
+            inputs'.haskemathesis.packages.default
           ];
           services.postgresql = {
             enable = true;
@@ -32,6 +38,26 @@
           machine.succeed("""
             curl http://localhost:8080/actuator/health | grep -o \"UP\"
           """)
+
+          # Property testing
+          machine.succeed("""
+            haskemathesis-cli test \
+              --url http://localhost:8080/api \
+              --spec "${openapiSpec}" \
+          """)
+          machine.succeed("""
+            haskemathesis-cli test \
+              --url http://localhost:8080/api \
+              --spec "${openapiSpec}" \
+              --negative
+          """)
+          machine.succeed("""
+            haskemathesis-cli test \
+              --url http://localhost:8080/api \
+              --spec "${openapiSpec}" \
+              --stateful
+          """)
+
           print("Yippie Backend works!")
         '';
       };

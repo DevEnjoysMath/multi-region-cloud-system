@@ -1,5 +1,6 @@
 package com.sweng.backend.user;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,12 @@ public class UserService {
     }
 
     String hashedPassword = passwordEncoder.encode(password);
-    User user = new User(UUID.randomUUID(), username, email, hashedPassword);
+
+    User user = new User(UUID.randomUUID(), username, email, hashedPassword, OffsetDateTime.now());
+
+    // Default role per OpenAPI spec: CUSTOMER
+    user.getRoles().add(Role.CUSTOMER);
+
     return userRepository.save(user);
   }
 

@@ -1,6 +1,11 @@
 spring:
   application:
     name: backend
+  devtools:
+    restart:
+      enabled: true
+      poll-interval: 1s
+      quiet-period: 400ms
   datasource:
     url: jdbc:postgresql://localhost:5432/sweng
     username: postgres
@@ -12,6 +17,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,mappings
 jwt:
   secret: H3q5G0iAKz+gwJzlJTQIKIco7jZlP74GwtgRrMoBSQUa
   expiration: 86400000

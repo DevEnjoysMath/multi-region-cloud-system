@@ -37,6 +37,8 @@ _: {
               enabled = true;
               org_role = "Viewer";
             };
+
+            security.secret_key = lib.mkDefault "default_key";
           };
 
           provision = {

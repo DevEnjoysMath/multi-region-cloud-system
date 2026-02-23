@@ -13,8 +13,9 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
+import { RestaurantsPage } from "./pages/RestaurantPage";
 
-import logoUrl from "./assets/logo.svg";
+import logoUrl from "./logo.svg";
 import "./index.css";
 
 function AnimatedRoutes() {
@@ -41,6 +42,14 @@ function AnimatedRoutes() {
           }
         />
         <Route
+          path="/menu"
+          element={
+            <Page>
+              <OrdersPage />
+            </Page>
+          }
+        />
+        <Route
           path="/signup"
           element={
             <Page>
@@ -60,7 +69,7 @@ function AnimatedRoutes() {
           path="/dashboard"
           element={
             <Page>
-              <OrdersPage />
+              <RestaurantsPage />
             </Page>
           }
         />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom"; 
 import { Button } from "@/components/ui/button";
 import { useSignup } from "../api/authhooks";
 
@@ -15,17 +15,25 @@ import { useSignup } from "../api/authhooks";
  * Uses the useSignup API hook to communicate
  * with the backend authentication service.
  */
-export function SignupPage() {
-  const { mutate, isPending, error } = useSignup();
+  export function SignupPage() {
+    const { mutate, isPending, error } = useSignup();
+    const navigate = useNavigate(); // ✅ add this
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    mutate({ name, email, password });
-  };
+    const handleSubmit = (e: React.FormEvent) => {
+      e.preventDefault();
+      mutate(
+        { name, email, password },
+        {
+          onSuccess: () => {
+            navigate("/restaurants");
+          },
+        }
+      );
+    };
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 flex items-center justify-center px-4">

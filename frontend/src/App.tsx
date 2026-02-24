@@ -14,7 +14,7 @@ import { LandingPage } from "./pages/LandingPage";
 import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
 
-import logoUrl from "./assets/logo.svg";
+// import logoUrl from "./assets/logo.svg";
 import "./index.css";
 
 function AnimatedRoutes() {
@@ -108,7 +108,7 @@ function AppShell() {
         aria-label="Go to Get Started"
       >
         <img
-          src={logoUrl}
+          // src={logoUrl}
           alt="Toast Logo"
           className="h-10 w-auto select-none"
           draggable={false}

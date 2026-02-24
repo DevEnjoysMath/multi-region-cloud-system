@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSignup } from "../api/authhooks";
 
@@ -17,6 +17,7 @@ import { useSignup } from "../api/authhooks";
  */
 export function SignupPage() {
   const { mutate, isPending, error } = useSignup();
+  const navigate = useNavigate(); // ✅ add this
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -24,7 +25,14 @@ export function SignupPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ name, email, password });
+    mutate(
+      { name, email, password },
+      {
+        onSuccess: () => {
+          navigate("/restaurants");
+        },
+      },
+    );
   };
 
   return (

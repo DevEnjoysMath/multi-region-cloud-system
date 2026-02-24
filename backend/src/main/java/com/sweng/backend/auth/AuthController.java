@@ -58,7 +58,11 @@ public class AuthController {
 
       return ResponseEntity.status(201).body(dto);
     } catch (RuntimeException e) {
-      return ResponseEntity.badRequest().body(e.getMessage());
+      String message = e.getMessage();
+      if (message != null && message.contains("already exists")) {
+        return ResponseEntity.status(409).body(message);
+      }
+      return ResponseEntity.badRequest().body(message);
     }
   }
 

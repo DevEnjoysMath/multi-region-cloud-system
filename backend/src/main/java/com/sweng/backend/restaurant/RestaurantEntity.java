@@ -3,6 +3,8 @@ package com.sweng.backend.restaurant;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * JPA entity representing a restaurant in the system.
@@ -19,6 +21,7 @@ public class RestaurantEntity {
 
   /** Unique identifier for the restaurant (UUID primary key). */
   @Id
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(nullable = false, updatable = false)
   private UUID id;
 
@@ -51,6 +54,7 @@ public class RestaurantEntity {
   private String openingHours;
 
   /** UUID of the user who owns the restaurant. */
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(nullable = false)
   private UUID ownerId;
 

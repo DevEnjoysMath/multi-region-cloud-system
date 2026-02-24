@@ -195,13 +195,15 @@ public class OrderController {
   }
 
   /**
-   * Handle PUT with empty orderId - return 400.
+   * Handle PUT with empty orderId - return 405.
    *
-   * @return never returns normally, throws 400 error
+   * @return 405 Method Not Allowed with Allow header
    */
   @PutMapping({"", "/"})
-  public ResponseEntity<Void> updateOrderNoId() {
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required");
+  public ResponseEntity<String> updateOrderNoId() {
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .header("Allow", "GET, POST")
+        .body("Method PUT not allowed on /orders");
   }
 
   /**
@@ -264,13 +266,15 @@ public class OrderController {
   }
 
   /**
-   * Handle DELETE with empty orderId - return 400.
+   * Handle DELETE with empty orderId - return 405.
    *
-   * @return never returns normally, throws 400 error
+   * @return 405 Method Not Allowed with Allow header
    */
   @DeleteMapping({"", "/"})
-  public ResponseEntity<Void> deleteOrderNoId() {
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "orderId is required");
+  public ResponseEntity<String> deleteOrderNoId() {
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .header("Allow", "GET, POST")
+        .body("Method DELETE not allowed on /orders");
   }
 
   /**

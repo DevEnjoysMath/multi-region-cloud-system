@@ -86,15 +86,72 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/auth/**")
+                auth
+                    // Auth endpoints
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/register")
                     .permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/login")
+                    .permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/logout")
+                    .authenticated()
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/auth/me")
+                    .authenticated()
+                    // Permit unsupported methods on auth endpoints to get 405
+                    .requestMatchers(
+                        "/api/auth/register", "/api/auth/login", "/api/auth/logout", "/api/auth/me")
+                    .permitAll()
+                    // Actuator and error
                     .requestMatchers("/actuator/**")
                     .permitAll()
                     .requestMatchers("/error")
                     .permitAll()
-                    .requestMatchers("/api/restaurants/**")
+                    // Permit unsupported methods FIRST (before authenticated rules)
+                    // Restaurant unsupported methods - must come before /** rules
+                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/restaurants")
                     .permitAll()
-                    .requestMatchers("/api/orders", "/api/orders/**")
+                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/restaurants")
+                    .permitAll()
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.POST, "/api/restaurants/{restaurantId}")
+                    .permitAll()
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.PATCH,
+                        "/api/restaurants",
+                        "/api/restaurants/**")
+                    .permitAll()
+                    // Order unsupported methods - must come before /** rules
+                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/orders")
+                    .permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders")
+                    .permitAll()
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.POST, "/api/orders/{orderId}")
+                    .permitAll()
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.PATCH, "/api/orders", "/api/orders/**")
+                    .permitAll()
+                    // Restaurant endpoints - specific methods
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.GET,
+                        "/api/restaurants",
+                        "/api/restaurants/**")
+                    .permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/restaurants")
+                    .authenticated()
+                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/restaurants/**")
+                    .authenticated()
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.DELETE, "/api/restaurants/**")
+                    .authenticated()
+                    // Order endpoints - specific methods
+                    .requestMatchers(
+                        org.springframework.http.HttpMethod.GET, "/api/orders", "/api/orders/**")
+                    .authenticated()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/orders")
+                    .authenticated()
+                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/orders/**")
+                    .authenticated()
+                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders/**")
                     .authenticated()
                     .anyRequest()
                     .authenticated());

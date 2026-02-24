@@ -21,6 +21,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-json")
 
     implementation("io.jsonwebtoken:jjwt-api:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
@@ -40,8 +41,6 @@ dependencies {
 
     runtimeOnly("org.postgresql:postgresql")
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
-
-    implementation("com.fasterxml.jackson.core:jackson-databind")
 }
 
 tasks.withType<Test> { useJUnitPlatform() }

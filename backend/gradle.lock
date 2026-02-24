@@ -2149,20 +2149,6 @@
       "hash": "sha256-Z1Lyu8oVi6TAwGjcy6/1Q2Zf3lPH4MgAxv6Nfo+8p7E="
     }
   },
-  "org.springframework.boot:spring-boot-security-test:4.0.1": {
-    "spring-boot-security-test-4.0.1.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-security-test/4.0.1/spring-boot-security-test-4.0.1.jar",
-      "hash": "sha256-Kw3TiyuJ1ekUJ4JlqwGtFddKP+rdo9/dT6k5iZypsGc="
-    },
-    "spring-boot-security-test-4.0.1.module": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-security-test/4.0.1/spring-boot-security-test-4.0.1.module",
-      "hash": "sha256-wvhJG/skf95MrfZF4LQ2yUV8Xr0yYm9j0TN73eyig3Y="
-    },
-    "spring-boot-security-test-4.0.1.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-security-test/4.0.1/spring-boot-security-test-4.0.1.pom",
-      "hash": "sha256-Lkmv1zEu47hY1Hbkvun68lfqZP0XeXHc5n+RteUJWf8="
-    }
-  },
   "org.springframework.boot:spring-boot-servlet:4.0.1": {
     "spring-boot-servlet-4.0.1.jar": {
       "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-servlet/4.0.1/spring-boot-servlet-4.0.1.jar",
@@ -2275,6 +2261,20 @@
       "hash": "sha256-+0gXa9o658gDetfsTeNO+8BxqRojFgds2QxOoVGk4Ks="
     }
   },
+  "org.springframework.boot:spring-boot-starter-json:4.0.1": {
+    "spring-boot-starter-json-4.0.1.jar": {
+      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-json/4.0.1/spring-boot-starter-json-4.0.1.jar",
+      "hash": "sha256-BUKx3L0TpuD04jdyZbBtS4Yw5gNorvK1K4hUYDeN75I="
+    },
+    "spring-boot-starter-json-4.0.1.module": {
+      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-json/4.0.1/spring-boot-starter-json-4.0.1.module",
+      "hash": "sha256-ZsgGp02gjNvIWFfPUIybJIaxowsqcin03sOIubjWplc="
+    },
+    "spring-boot-starter-json-4.0.1.pom": {
+      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-json/4.0.1/spring-boot-starter-json-4.0.1.pom",
+      "hash": "sha256-az1eh9EXxxXEG9SILKA1OBGNA6V/JFHz0nURCD+wK8M="
+    }
+  },
   "org.springframework.boot:spring-boot-starter-logging:4.0.1": {
     "spring-boot-starter-logging-4.0.1.jar": {
       "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-logging/4.0.1/spring-boot-starter-logging-4.0.1.jar",
@@ -2315,20 +2315,6 @@
     "spring-boot-starter-security-4.0.1.pom": {
       "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-security/4.0.1/spring-boot-starter-security-4.0.1.pom",
       "hash": "sha256-BhJ7NY82RablxT9iWo0tDblPtRVfAgD2H2BQe5Aiw/4="
-    }
-  },
-  "org.springframework.boot:spring-boot-starter-security-test:4.0.1": {
-    "spring-boot-starter-security-test-4.0.1.jar": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-security-test/4.0.1/spring-boot-starter-security-test-4.0.1.jar",
-      "hash": "sha256-IflMbaAHoha/1xkThIVVsfwFKpOaODY5L4Yf7B5PqgA="
-    },
-    "spring-boot-starter-security-test-4.0.1.module": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-security-test/4.0.1/spring-boot-starter-security-test-4.0.1.module",
-      "hash": "sha256-f/rllpTVe4XcOdKJQhjT0Lv1o1yys6MHFsCw/+KeHyo="
-    },
-    "spring-boot-starter-security-test-4.0.1.pom": {
-      "url": "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-starter-security-test/4.0.1/spring-boot-starter-security-test-4.0.1.pom",
-      "hash": "sha256-/x0uzmEOojlEjYwBanoFOpTBsUt+V8ZdBEEu0ggyKFE="
     }
   },
   "org.springframework.boot:spring-boot-starter-test:4.0.1": {

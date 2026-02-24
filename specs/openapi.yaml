@@ -68,6 +68,8 @@ paths:
       responses:
         "200":
           description: Logout successful
+        "400":
+          description: Bad request - malformed headers
         "401":
           description: Unauthorized - invalid or missing token
   /auth/me:
@@ -82,6 +84,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request - malformed headers
         "401":
           description: Unauthorized - invalid or missing token
   /restaurants:
@@ -97,12 +101,16 @@ paths:
           schema:
             type: integer
             default: 0
+            minimum: 0
+            maximum: 10000
         - name: size
           in: query
           description: Number of items per page
           schema:
             type: integer
             default: 20
+            minimum: 1
+            maximum: 100
       responses:
         "200":
           description: List of restaurants
@@ -112,6 +120,8 @@ paths:
                 $ref: "#/components/schemas/RestaurantPage"
         "400":
           description: Invalid query parameters
+        "500":
+          description: Internal server error
     post:
       summary: Create a new restaurant
       description: Creates a new restaurant entry. Requires ADMIN role. The authenticated user will be set as the restaurant owner.
@@ -131,6 +141,8 @@ paths:
                 $ref: "#/components/schemas/Restaurant"
         "400":
           description: Invalid request
+        "401":
+          description: Unauthorized - invalid or missing token
         "403":
           description: Forbidden - requires admin role
   /restaurants/{restaurantId}:
@@ -146,6 +158,7 @@ paths:
           description: Unique identifier of the restaurant
           schema:
             type: string
+            format: uuid
       responses:
         "200":
           description: Restaurant found
@@ -157,6 +170,8 @@ paths:
           description: Invalid restaurantId format
         "404":
           description: Restaurant not found
+        "500":
+          description: Internal server error
     put:
       summary: Update a restaurant
       description: Updates an existing restaurant's information. Requires ADMIN role.
@@ -168,6 +183,7 @@ paths:
           description: Unique identifier of the restaurant to update
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -183,6 +199,8 @@ paths:
                 $ref: "#/components/schemas/Restaurant"
         "400":
           description: Invalid restaurantId format or request body
+        "401":
+          description: Unauthorized - invalid or missing token
         "403":
           description: Forbidden - requires admin role
         "404":
@@ -198,11 +216,14 @@ paths:
           description: Unique identifier of the restaurant to delete
           schema:
             type: string
+            format: uuid
       responses:
         "204":
           description: Restaurant deleted
         "400":
           description: Invalid restaurantId format
+        "401":
+          description: Unauthorized - invalid or missing token
         "403":
           description: Forbidden - requires admin role
         "404":
@@ -218,11 +239,13 @@ paths:
           description: Filter orders by restaurant ID
           schema:
             type: string
+            format: uuid
         - name: userId
           in: query
           description: Filter orders by user ID
           schema:
             type: string
+            format: uuid
         - name: status
           in: query
           description: Filter orders by status
@@ -278,6 +301,7 @@ paths:
           description: Unique identifier of the order
           schema:
             type: string
+            format: uuid
       responses:
         "200":
           description: Order found
@@ -302,6 +326,7 @@ paths:
           description: Unique identifier of the order to update
           schema:
             type: string
+            format: uuid
       requestBody:
         required: true
         content:
@@ -332,6 +357,7 @@ paths:
           description: Unique identifier of the order to delete
           schema:
             type: string
+            format: uuid
       responses:
         "204":
           description: Order deleted
@@ -355,19 +381,21 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: Unique user identifier (UUID)
         username:
           type: string
           description: Unique user login name
         email:
           type: string
-          format: email
           description: User email address
         firstName:
           type: string
+          nullable: true
           description: User's first name
         lastName:
           type: string
+          nullable: true
           description: User's last name
         roles:
           type: array
@@ -382,6 +410,7 @@ components:
     RegisterRequest:
       type: object
       description: Request body for user registration
+      additionalProperties: false
       required:
         - username
         - email
@@ -389,39 +418,51 @@ components:
       properties:
         username:
           type: string
-          description: Unique username for login
+          description: Unique username for login (letters, numbers, underscores, hyphens only)
+          pattern: "^[a-zA-Z0-9_-]+$"
           minLength: 3
           maxLength: 50
         email:
           type: string
-          format: email
-          description: User's email address
+          pattern: "^[a-zA-Z0-9_%+-]+(?:\\.[a-zA-Z0-9_%+-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\\.[a-zA-Z]{2,63}$"
+          maxLength: 120
+          description: User's email address (standard format, max 120 chars)
         password:
           type: string
+          pattern: "^[\\x20-\\x7E]+$"
           minLength: 8
-          maxLength: 100
-          description: Must contain at least one uppercase, one lowercase, one digit
+          maxLength: 72
+          description: ASCII printable characters only (space to tilde), max 72 bytes for bcrypt
         firstName:
           type: string
-          description: User's first name (optional)
+          nullable: true
+          description: User's first name (optional, ASCII printable)
+          pattern: "^[\\x20-\\x7E]*$"
           maxLength: 50
         lastName:
           type: string
-          description: User's last name (optional)
+          nullable: true
+          description: User's last name (optional, ASCII printable)
+          pattern: "^[\\x20-\\x7E]*$"
           maxLength: 50
     LoginRequest:
       type: object
       description: Request body for user authentication
+      additionalProperties: false
       required:
         - username
         - password
       properties:
         username:
           type: string
-          description: User's registered username
+          description: User's registered username (letters, numbers, underscores, hyphens only)
+          pattern: "^[a-zA-Z0-9_-]+$"
+          minLength: 1
         password:
           type: string
-          description: User's password
+          description: User's password (ASCII printable, at least one non-space)
+          pattern: "^[\\x21-\\x7E][\\x20-\\x7E]*$"
+          minLength: 1
     LoginResponse:
       type: object
       description: Response containing authentication token and user info
@@ -444,6 +485,7 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: Unique restaurant identifier (UUID)
         name:
           type: string
@@ -469,6 +511,7 @@ components:
           description: "Business hours (e.g., Mon-Fri: 9AM-10PM)"
         ownerId:
           type: string
+          format: uuid
           description: User ID of the restaurant owner
         isActive:
           type: boolean
@@ -484,6 +527,7 @@ components:
     CreateRestaurantRequest:
       type: object
       description: Request body for creating a new restaurant
+      additionalProperties: false
       required:
         - name
         - address
@@ -500,6 +544,7 @@ components:
         address:
           type: string
           description: Physical address of the restaurant
+          minLength: 1
           maxLength: 200
         phone:
           type: string
@@ -520,6 +565,7 @@ components:
     UpdateRestaurantRequest:
       type: object
       description: Request body for updating an existing restaurant
+      additionalProperties: false
       properties:
         name:
           type: string
@@ -580,12 +626,16 @@ components:
       properties:
         id:
           type: string
+          format: uuid
           description: Unique order identifier (UUID)
         restaurantId:
           type: string
+          format: uuid
           description: ID of the restaurant fulfilling the order
         customerId:
           type: string
+          format: uuid
+          nullable: true
           description: User ID who placed the order (null for guest orders)
         customerName:
           type: string
@@ -640,12 +690,14 @@ components:
     CreateOrderRequest:
       type: object
       description: Request body for creating a new order
+      additionalProperties: false
       required:
         - restaurantId
         - items
       properties:
         restaurantId:
           type: string
+          format: uuid
           description: Restaurant ID to place order with
         customerName:
           type: string
@@ -662,6 +714,7 @@ components:
           minItems: 1
           items:
             type: object
+            additionalProperties: false
             required:
               - itemId
               - quantity
@@ -680,6 +733,7 @@ components:
     UpdateOrderRequest:
       type: object
       description: Request body for updating an existing order
+      additionalProperties: false
       properties:
         customerName:
           type: string
@@ -696,6 +750,7 @@ components:
           minItems: 1
           items:
             type: object
+            additionalProperties: false
             required:
               - itemId
               - quantity

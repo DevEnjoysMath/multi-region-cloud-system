@@ -5,9 +5,12 @@ import com.sweng.backend.restaurant.dto.RestaurantDto;
 import com.sweng.backend.restaurant.dto.RestaurantPageDto;
 import com.sweng.backend.restaurant.dto.UpdateRestaurantRequest;
 import com.sweng.backend.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,18 +39,39 @@ public class RestaurantController {
     this.userRepository = userRepository;
   }
 
+  private static final Set<String> ALLOWED_RESTAURANT_LIST_PARAMS = Set.of("page", "size");
+
   /**
    * List restaurants with pagination.
    *
    * @param page the page number (0-indexed)
    * @param size the page size
+   * @param request the HTTP request for parameter validation
    * @return paginated list of restaurants
    */
   @GetMapping
   public ResponseEntity<RestaurantPageDto> getRestaurants(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      HttpServletRequest request) {
 
-    if (page < 0 || size < 1) {
+    // Reject unknown query parameters and empty values
+    Map<String, String[]> params = request.getParameterMap();
+    for (Map.Entry<String, String[]> entry : params.entrySet()) {
+      String key = entry.getKey();
+      if (!ALLOWED_RESTAURANT_LIST_PARAMS.contains(key)) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Unknown query parameter: " + key);
+      }
+      // Reject empty parameter values
+      String[] values = entry.getValue();
+      if (values != null && values.length > 0 && values[0] != null && values[0].isEmpty()) {
+        throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, "Empty value for parameter: " + key);
+      }
+    }
+
+    if (page < 0 || size < 1 || page > 10000 || size > 100) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid page/size");
     }
 
@@ -123,13 +147,15 @@ public class RestaurantController {
   }
 
   /**
-   * Handle PUT with empty restaurantId - return 400.
+   * Handle PUT with empty restaurantId - return 405.
    *
-   * @return never returns normally, throws 400 error
+   * @return 405 Method Not Allowed with Allow header
    */
   @PutMapping({"", "/"})
-  public ResponseEntity<Void> updateRestaurantNoId() {
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurantId is required");
+  public ResponseEntity<String> updateRestaurantNoId() {
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .header("Allow", "GET, POST")
+        .body("Method PUT not allowed on /restaurants");
   }
 
   /**
@@ -166,11 +192,13 @@ public class RestaurantController {
   /**
    * Handle DELETE with empty restaurantId - return 400.
    *
-   * @return never returns normally, throws 400 error
+   * @return 405 Method Not Allowed with Allow header
    */
   @DeleteMapping({"", "/"})
-  public ResponseEntity<Void> deleteRestaurantNoId() {
-    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "restaurantId is required");
+  public ResponseEntity<String> deleteRestaurantNoId() {
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .header("Allow", "GET, POST")
+        .body("Method DELETE not allowed on /restaurants");
   }
 
   /**

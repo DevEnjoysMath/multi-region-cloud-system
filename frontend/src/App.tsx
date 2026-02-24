@@ -12,7 +12,8 @@ import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
 import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
-// import logoUrl from "./assets/logo.svg";
+import toastLogo from "./public/logo.svg";
+
 import "./index.css";
 
 /**
@@ -146,7 +147,7 @@ function AppShell() {
         aria-label="Go to Get Started"
       >
         <img
-          // src={logoUrl}
+          src={toastLogo}
           alt="Toast Logo"
           className="h-10 w-auto select-none"
           draggable={false}

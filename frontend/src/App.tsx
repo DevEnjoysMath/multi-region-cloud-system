@@ -15,7 +15,7 @@ import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
 import { RestaurantsPage } from "./pages/RestaurantPage";
 
-import logoUrl from "./logo.svg";
+import logoUrl from "./assets/toastLogo.png";
 import "./index.css";
 
 function AnimatedRoutes() {

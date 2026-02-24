@@ -1,8 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
+/**
+ * Landing page displayed to unauthenticated visitors.
+ *
+ * Renders a centered "Get Started" button that navigates the user to the login page.
+ *
+ * @returns The landing page JSX element.
+ *
+ * @example
+ * <LandingPage />
+ */
 export const LandingPage = () => {
   const navigate = useNavigate();
-
   return (
     <div className="flex items-center justify-center min-h-screen">
       <button
@@ -19,8 +28,16 @@ export const LandingPage = () => {
   );
 };
 
-
+/**
+ * Inline style definitions for the LandingPage component.
+ *
+ * @remarks
+ * These styles are kept as a fallback alongside Tailwind classes.
+ * `container` centres content vertically and horizontally over a dark background.
+ * `button` applies the gradient, shadow, and hover transition to the CTA button.
+ */
 const styles = {
+  /** Full-viewport dark container that centres its children. */
   container: {
     height: "100vh",
     display: "flex",
@@ -28,6 +45,7 @@ const styles = {
     alignItems: "center",
     backgroundColor: "#0f172a",
   },
+  /** Primary call-to-action button with a blue-to-indigo gradient. */
   button: {
     padding: "20px 50px",
     fontSize: "26px",

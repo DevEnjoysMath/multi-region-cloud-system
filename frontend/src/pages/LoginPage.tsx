@@ -2,9 +2,31 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+/**
+ * Login page that allows existing users to authenticate.
+ *
+ * Renders a card-style form with email/password fields and a Google SSO option.
+ * On successful submission the user is redirected to `/dashboard`.
+ * Unauthenticated visitors can also navigate to `/signup` or `/forgot-password`.
+ *
+ * @returns The login page JSX element.
+ *
+ * @example
+ * // Typically mounted by the router, no props required.
+ * <LoginPage />
+ */
 export function LoginPage() {
   const navigate = useNavigate();
 
+  /**
+   * Handles the login form submission.
+   *
+   * Prevents the default browser form submission, then navigates the user to
+   * the dashboard. Replace the `navigate` call with real auth logic (e.g. an
+   * API request) before shipping to production.
+   *
+   * @param e - The React form submission event.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     navigate("/dashboard");
@@ -17,7 +39,6 @@ export function LoginPage() {
           <h1 className="text-2xl font-semibold">Sign in to your account</h1>
           <p className="text-sm text-muted-foreground">Welcome back 👋</p>
         </div>
-
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <Label>Email</Label>
@@ -27,7 +48,6 @@ export function LoginPage() {
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
           <div className="space-y-2">
             <div className="flex justify-between items-center">
               <Label>Password</Label>
@@ -38,14 +58,12 @@ export function LoginPage() {
                 Forgot password?
               </Link>
             </div>
-
             <input
               type="password"
               placeholder="Enter your password"
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
           <Button
             type="submit"
             className="w-full h-11 bg-indigo-600 hover:bg-indigo-700"
@@ -53,7 +71,6 @@ export function LoginPage() {
             Sign in
           </Button>
         </form>
-
         <div className="relative text-center text-sm">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -62,7 +79,6 @@ export function LoginPage() {
             OR
           </span>
         </div>
-
         <Button
           variant="outline"
           className="w-full flex items-center justify-center gap-3 h-11"
@@ -93,9 +109,8 @@ export function LoginPage() {
           </svg>
           Sign in with Google
         </Button>
-
         <p className="text-sm text-center text-muted-foreground">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/signup" className="text-indigo-600 hover:underline">
             Create account
           </Link>

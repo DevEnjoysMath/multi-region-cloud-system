@@ -22,7 +22,6 @@ export default function OrdersPage() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const navigate = useNavigate();
 
-
   // NOTE: These are fixed Unsplash photo IDs (more reliable than generic links)
   const food: Product[] = [
     {
@@ -149,16 +148,18 @@ export default function OrdersPage() {
       {/* Tabs */}
       <div className="flex gap-4 mb-10">
         <button
-          className={`px-6 py-2 rounded-full font-semibold transition ${activeTab === "food" ? "bg-orange-500 text-white" : "bg-gray-200"
-            }`}
+          className={`px-6 py-2 rounded-full font-semibold transition ${
+            activeTab === "food" ? "bg-orange-500 text-white" : "bg-gray-200"
+          }`}
           onClick={() => setActiveTab("food")}
         >
           Food
         </button>
 
         <button
-          className={`px-6 py-2 rounded-full font-semibold transition ${activeTab === "drinks" ? "bg-orange-500 text-white" : "bg-gray-200"
-            }`}
+          className={`px-6 py-2 rounded-full font-semibold transition ${
+            activeTab === "drinks" ? "bg-orange-500 text-white" : "bg-gray-200"
+          }`}
           onClick={() => setActiveTab("drinks")}
         >
           Drinks

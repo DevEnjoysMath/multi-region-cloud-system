@@ -116,7 +116,7 @@ export function RestaurantsPage() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700">
+    <div className="min-h-screen bg-white">
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">

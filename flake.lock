@@ -369,48 +369,6 @@
         "type": "github"
       }
     },
-    "haskell-flake": {
-      "locked": {
-        "lastModified": 1770936528,
-        "narHash": "sha256-prklSEWoFyaIHo2jxq7BPw/LyTPBLR/em5C3h5lGXqg=",
-        "owner": "srid",
-        "repo": "haskell-flake",
-        "rev": "96d901fb45a33fe65c74f5b03f75e1195a2cd81b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "srid",
-        "repo": "haskell-flake",
-        "type": "github"
-      }
-    },
-    "haskemathesis": {
-      "inputs": {
-        "flake-parts": [
-          "flake-parts"
-        ],
-        "haskell-flake": "haskell-flake",
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "treefmt-nix": [
-          "treefmt-nix"
-        ]
-      },
-      "locked": {
-        "lastModified": 1771593661,
-        "narHash": "sha256-taVzmYjW78lVmUgCqR+D29bFiKmVuDMLBIbVw+NrNMw=",
-        "owner": "weyl-ai",
-        "repo": "haskemathesis",
-        "rev": "d8046c168cd187e13a3bf42144f0a3684c1e396f",
-        "type": "github"
-      },
-      "original": {
-        "owner": "weyl-ai",
-        "repo": "haskemathesis",
-        "type": "github"
-      }
-    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -563,11 +521,11 @@
         "flake-utils": "flake-utils",
         "garnix-lib": "garnix-lib",
         "gradle2nix": "gradle2nix",
-        "haskemathesis": "haskemathesis",
         "import-tree": "import-tree",
         "nixpkgs": "nixpkgs",
         "process-compose-flake": "process-compose-flake",
         "ragenix": "ragenix",
+        "schemathesis": "schemathesis",
         "services-flake": "services-flake",
         "systems": "systems_4",
         "treefmt-nix": "treefmt-nix_2"
@@ -591,6 +549,22 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "schemathesis": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1771831443,
+        "narHash": "sha256-400ZXUXh6EjjAQBpY0BaVKOq4E2zIERJIgGtG+2SQBw=",
+        "owner": "schemathesis",
+        "repo": "schemathesis",
+        "rev": "8fd7017aa45d89cd2d9069d399f6034517cd69d3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "schemathesis",
+        "repo": "schemathesis",
         "type": "github"
       }
     },

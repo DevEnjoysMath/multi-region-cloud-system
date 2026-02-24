@@ -4,7 +4,7 @@ let
 in
 {
   perSystem =
-    { pkgs, inputs', ... }:
+    { pkgs, self', ... }:
     {
       checks.healthCheck = pkgs.testers.runNixOSTest {
         name = "health-check";
@@ -13,7 +13,7 @@ in
             self.nixosModules.backend
           ];
           environment.systemPackages = [
-            inputs'.haskemathesis.packages.default
+            self'.packages.schemathesis
           ];
           services.postgresql = {
             enable = true;
@@ -41,21 +41,21 @@ in
 
           # Property testing
           machine.succeed("""
-            haskemathesis-cli test \
+            schemathesis run \
               --url http://localhost:8080/api \
-              --spec "${openapiSpec}" \
+              "${openapiSpec}"
           """)
           machine.succeed("""
-            haskemathesis-cli test \
+            schemathesis run \
               --url http://localhost:8080/api \
-              --spec "${openapiSpec}" \
-              --negative
+              --generation-mode negative \
+              "${openapiSpec}"
           """)
           machine.succeed("""
-            haskemathesis-cli test \
+            schemathesis run \
               --url http://localhost:8080/api \
-              --spec "${openapiSpec}" \
-              --stateful
+              --stateful=links \
+              "${openapiSpec}"
           """)
 
           print("Yippie Backend works!")

@@ -1,6 +1,7 @@
 package com.sweng.backend.auth;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 /** Request object for user login. */
 public class LoginRequest {
@@ -8,7 +9,9 @@ public class LoginRequest {
   /** Constructs a LoginRequest with default values. */
   public LoginRequest() {}
 
-  @NotBlank private String username;
+  @NotBlank
+  @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Invalid username format")
+  private String username;
 
   @NotBlank private String password;
 

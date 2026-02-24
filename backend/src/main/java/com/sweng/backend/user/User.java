@@ -3,6 +3,8 @@ package com.sweng.backend.user;
 import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /** Entity representing a user in the system. */
 @Entity
@@ -10,6 +12,7 @@ import java.util.UUID;
 public class User {
 
   @Id
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(nullable = false, updatable = false)
   private UUID uid;
 

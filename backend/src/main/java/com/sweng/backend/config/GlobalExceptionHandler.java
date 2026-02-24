@@ -1,8 +1,10 @@
 package com.sweng.backend.config;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,5 +57,23 @@ public class GlobalExceptionHandler {
             .reduce((a, b) -> a + "; " + b)
             .orElse("Validation failed");
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+  }
+
+  /**
+   * Handles unsupported HTTP method exceptions.
+   *
+   * @param ex the exception
+   * @return 405 Method Not Allowed response with Allow header
+   */
+  @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<String> handleMethodNotSupported(
+      HttpRequestMethodNotSupportedException ex) {
+    HttpHeaders headers = new HttpHeaders();
+    if (ex.getSupportedHttpMethods() != null && !ex.getSupportedHttpMethods().isEmpty()) {
+      headers.setAllow(ex.getSupportedHttpMethods());
+    }
+    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+        .headers(headers)
+        .body("Method " + ex.getMethod() + " not allowed");
   }
 }

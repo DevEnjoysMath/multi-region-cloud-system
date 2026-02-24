@@ -6,6 +6,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * JPA entity representing a customer order.
@@ -22,10 +24,12 @@ public class OrderEntity {
 
   /** Primary key for the order. */
   @Id
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(nullable = false, updatable = false)
   private UUID id;
 
   /** Restaurant fulfilling this order. */
+  @JdbcTypeCode(SqlTypes.VARCHAR)
   @Column(nullable = false)
   private UUID restaurantId;
 
@@ -34,7 +38,9 @@ public class OrderEntity {
    *
    * <p>May be null for guest orders, per spec.
    */
-  @Column private UUID customerId;
+  @JdbcTypeCode(SqlTypes.VARCHAR)
+  @Column
+  private UUID customerId;
 
   /** Customer display name (optional). */
   @Column(length = 100)

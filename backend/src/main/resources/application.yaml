@@ -1,6 +1,11 @@
 spring:
   application:
     name: backend
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+    mapper:
+      accept-case-insensitive-enums: true
   devtools:
     restart:
       enabled: true

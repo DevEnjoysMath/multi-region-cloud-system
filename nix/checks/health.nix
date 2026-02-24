@@ -1,6 +1,7 @@
 { self, ... }:
 let
-  openapiSpec = "${self}/specs/openapi.yaml";
+  sourceDir = "${self}";
+  openapiSpec = "specs/openapi.yaml";
 in
 {
   perSystem =
@@ -39,22 +40,11 @@ in
             curl http://localhost:8080/actuator/health | grep -o \"UP\"
           """)
 
-          # Property testing
+          # Property testing - cd to source dir so schemathesis.toml is auto-discovered
+          # Run all test phases: examples, coverage, fuzzing, stateful
           machine.succeed("""
-            schemathesis run \
+            cd "${sourceDir}" && schemathesis run \
               --url http://localhost:8080/api \
-              "${openapiSpec}"
-          """)
-          machine.succeed("""
-            schemathesis run \
-              --url http://localhost:8080/api \
-              --generation-mode negative \
-              "${openapiSpec}"
-          """)
-          machine.succeed("""
-            schemathesis run \
-              --url http://localhost:8080/api \
-              --stateful=links \
               "${openapiSpec}"
           """)
 

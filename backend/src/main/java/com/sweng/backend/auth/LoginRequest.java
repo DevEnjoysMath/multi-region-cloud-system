@@ -1,7 +1,6 @@
 package com.sweng.backend.auth;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 
 /** Request object for user login. */
 public class LoginRequest {
@@ -9,28 +8,28 @@ public class LoginRequest {
   /** Constructs a LoginRequest with default values. */
   public LoginRequest() {}
 
-  @NotBlank
-  @Pattern(regexp = "^[a-zA-Z0-9_-]+$", message = "Invalid username format")
-  private String username;
+  /** Username or email address of the user attempting to log in. */
+  @NotBlank private String identifier;
 
+  /** Password of the user attempting to log in. */
   @NotBlank private String password;
 
   /**
-   * Gets the username.
+   * Gets the identifier.
    *
-   * @return the username
+   * @return the username or email address
    */
-  public String getUsername() {
-    return username;
+  public String getIdentifier() {
+    return identifier;
   }
 
   /**
-   * Sets the username.
+   * Sets the identifier.
    *
-   * @param username the username to set
+   * @param identifier the username or email address to set
    */
-  public void setUsername(String username) {
-    this.username = username;
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
   }
 
   /**

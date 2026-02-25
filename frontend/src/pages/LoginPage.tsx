@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLogin } from "../api/authhooks";
 
 /**
- * Login page that allows existing users to authenticate.
+ * LoginPage component.
  *
- * Renders a card-style form with email/password fields and a Google SSO option.
- * On successful submission the user is redirected to `/dashboard`.
- * Unauthenticated visitors can also navigate to `/signup` or `/forgot-password`.
+ * Renders a card-style login form accepting either an email address or username
+ * alongside a password. On successful authentication the user is redirected to
+ * `/dashboard`. Also provides a Google SSO button and a link to `/signup`.
+ *
+ * Uses the {@link useLogin} hook to communicate with the backend authentication service.
  *
  * @returns The login page JSX element.
  *
@@ -16,20 +20,26 @@ import { Label } from "@/components/ui/label";
  * <LoginPage />
  */
 export function LoginPage() {
+  const { mutate, isPending, error } = useLogin();
   const navigate = useNavigate();
+
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
 
   /**
    * Handles the login form submission.
    *
-   * Prevents the default browser form submission, then navigates the user to
-   * the dashboard. Replace the `navigate` call with real auth logic (e.g. an
-   * API request) before shipping to production.
+   * Prevents the default browser form submission and calls the login mutation
+   * with the current identifier and password. Navigates to `/dashboard` on success.
    *
    * @param e - The React form submission event.
    */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/dashboard");
+    mutate(
+      { identifier, password },
+      { onSuccess: () => navigate("/dashboard") },
+    );
   };
 
   return (
@@ -41,16 +51,20 @@ export function LoginPage() {
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label htmlFor="identifier">Email or username</Label>
             <input
-              type="email"
-              placeholder="you@example.com"
+              id="identifier"
+              type="text"
+              placeholder="Email or username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label>Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Link
                 to="/forgot-password"
                 className="text-sm text-indigo-600 hover:underline"
@@ -59,16 +73,22 @@ export function LoginPage() {
               </Link>
             </div>
             <input
+              id="password"
               type="password"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
+          {error && <p className="text-red-500 text-sm">{error.message}</p>}
           <Button
             type="submit"
+            disabled={isPending}
             className="w-full h-11 bg-indigo-600 hover:bg-indigo-700"
           >
-            Sign in
+            {isPending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
         <div className="relative text-center text-sm">
@@ -82,9 +102,7 @@ export function LoginPage() {
         <Button
           variant="outline"
           className="w-full flex items-center justify-center gap-3 h-11"
-          onClick={() => navigate("/dashboard")}
         >
-          {/* Google SVG */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"

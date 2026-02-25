@@ -75,20 +75,28 @@ public class AuthController {
   @PostMapping("/login")
   public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
     try {
-      Authentication authentication =
-          authenticationManager.authenticate(
-              new UsernamePasswordAuthenticationToken(
-                  loginRequest.getUsername(), loginRequest.getPassword()));
+      String identifier = loginRequest.getIdentifier();
+      String username;
 
-      String jwt = jwtUtil.generateToken(loginRequest.getUsername());
+      // If it looks like an email, resolve it to a username first
+      if (identifier.contains("@")) {
+        User user = userService.findByEmail(identifier);
+        if (user == null) {
+          return ResponseEntity.status(401).body("Invalid username or password");
+        }
+        username = user.getUsername();
+      } else {
+        username = identifier;
+      }
 
-      User user = userService.findByUsername(loginRequest.getUsername());
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(username, loginRequest.getPassword()));
 
+      String jwt = jwtUtil.generateToken(username);
+      User user = userService.findByUsername(username);
       LoginResponse.UserDto userDto =
           new LoginResponse.UserDto(user.getUid().toString(), user.getUsername(), user.getEmail());
-
       LoginResponse response = new LoginResponse(jwt, 86400, userDto);
-
       return ResponseEntity.ok(response);
 
     } catch (Exception e) {

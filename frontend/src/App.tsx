@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
+import HomePage from "./pages/HomePage";
 import {
   Card,
   CardContent,
@@ -28,8 +29,10 @@ export function App() {
 
         {/* Centered content */}
         <div className="flex flex-col items-center justify-center min-h-screen relative z-10 gap-8">
+          
           <Routes>
-            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPasswordPage />} />

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -6,36 +7,23 @@ import {
   useLocation,
 } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { UtensilsCrossed } from "lucide-react";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 import { LandingPage } from "./pages/LandingPage";
+import { RestaurantsPage } from "./pages/RestaurantPage";
 import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
-import toastLogo from "./public/logo.svg";
 
 import "./index.css";
 
 /**
- * Renders all application routes wrapped in a Framer Motion `AnimatePresence`
- * so that pages animate in and out on navigation.
- *
- * Route map:
- * - `/`                → {@link LandingPage}
- * - `/login`           → {@link LoginPage}
- * - `/signup`          → {@link SignupPage}
- * - `/forgot-password` → {@link ForgotPasswordPage}
- * - `/dashboard`       → {@link OrdersPage}
- * - `/health`          → {@link DatabaseHealth}
- *
- * `location` is read from `useLocation` and passed explicitly to `<Routes>`
- * so that `AnimatePresence` can detect the route change and trigger the exit
- * animation before mounting the next page.
- *
- * @returns The animated route tree JSX element.
+ * Animated route wrapper
  */
 function AnimatedRoutes() {
   const location = useLocation();
+
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -75,6 +63,14 @@ function AnimatedRoutes() {
           path="/dashboard"
           element={
             <Page>
+              <RestaurantsPage />
+            </Page>
+          }
+        />
+        <Route
+          path="/menu/:id"
+          element={
+            <Page>
               <OrdersPage />
             </Page>
           }
@@ -93,19 +89,9 @@ function AnimatedRoutes() {
 }
 
 /**
- * Wraps a page component in a Framer Motion `div` that fades and slides
- * in on mount and out on unmount.
- *
- * Animation spec:
- * - **Enter** — fades from `opacity: 0, y: 8` to `opacity: 1, y: 0`
- * - **Exit**  — fades from `opacity: 1, y: 0` to `opacity: 0, y: -8`
- * - Duration: `180 ms`, easing: `easeOut`
- *
- * @param props - Component props.
- * @param props.children - The page content to animate.
- * @returns A motion-wrapped full-height container holding `children`.
+ * Page animation wrapper
  */
-function Page({ children }: { children: React.ReactNode }) {
+function Page({ children }: { children: ReactNode }) {
   return (
     <motion.div
       className="min-h-screen"
@@ -120,55 +106,36 @@ function Page({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Top-level layout shell rendered inside the router context.
- *
- * Provides a fixed logo button in the top-left corner that navigates back
- * to the landing page (`/`), then renders `AnimatedRoutes` below it.
- *
- * @remarks
- * The logo `src` is currently commented out pending asset pipeline setup.
- * Uncomment the `logoUrl` import and the `src` prop once the SVG is available.
- *
- * @returns The application shell JSX element.
+ * App shell with generic branding
  */
 function AppShell() {
   const navigate = useNavigate();
+
   return (
     <div className="min-h-screen w-screen bg-white relative">
-      {/* Logo — navigates back to the landing page */}
+      {/* Generic Brand Logo */}
       <button
         type="button"
         onClick={() => navigate("/")}
-        className="fixed top-6 left-6 z-50 rounded-xl p-2
-                   bg-white/80 backdrop-blur
-                   shadow-md hover:shadow-lg
+        className="fixed top-6 left-6 z-50 rounded-xl px-4 py-2
+                   bg-white shadow-md hover:shadow-lg
                    transition-all duration-200
-                   hover:scale-[1.03] active:scale-[0.98]"
-        aria-label="Go to Get Started"
+                   hover:scale-[1.03] active:scale-[0.98]
+                   flex items-center gap-2"
       >
-        <img
-          src={toastLogo}
-          alt="Toast Logo"
-          className="h-10 w-auto select-none"
-          draggable={false}
-        />
+        <div className="h-8 w-8 rounded-lg bg-orange-500 flex items-center justify-center text-white">
+          <UtensilsCrossed size={18} strokeWidth={2.5} />
+        </div>
+        <span className="font-semibold text-slate-900 text-lg">DineHub</span>
       </button>
+
       <AnimatedRoutes />
     </div>
   );
 }
 
 /**
- * Root application component.
- *
- * Mounts a `BrowserRouter` and renders `AppShell` inside it,
- * making the router context available to all descendant components.
- *
- * @returns The fully bootstrapped application JSX element.
- *
- * @example
- * // Entry point — rendered by main.tsx
- * createRoot(document.getElementById("root")!).render(<App />);
+ * Root App
  */
 export function App() {
   return (

@@ -294,9 +294,9 @@
     url = "https://registry.npmjs.org/linkify-it/-/linkify-it-5.0.0.tgz";
     hash = "sha512-5aHCbzQRADcdP+ATqnDuhhJ/MRIqDkZX5pyjFHRRysS8vZ5AbqGEoFIb6pYHPZ+L/OC2Lc+xT8uHVVR5CAK/wQ==";
   };
-  "lucide-react@0.545.0" = fetchurl {
-    url = "https://registry.npmjs.org/lucide-react/-/lucide-react-0.545.0.tgz";
-    hash = "sha512-7r1/yUuflQDSt4f1bpn5ZAocyIxcTyVyBBChSVtBKn5M+392cPmI5YJMWOJKk/HUWGm5wg83chlAZtCcGbEZtw==";
+  "lucide-react@0.575.0" = fetchurl {
+    url = "https://registry.npmjs.org/lucide-react/-/lucide-react-0.575.0.tgz";
+    hash = "sha512-VuXgKZrk0uiDlWjGGXmKV6MSk9Yy4l10qgVvzGn2AWBx1Ylt0iBexKOAoA6I7JO3m+M9oeovJd3yYENfkUbOeg==";
   };
   "lunr@2.3.9" = fetchurl {
     url = "https://registry.npmjs.org/lunr/-/lunr-2.3.9.tgz";

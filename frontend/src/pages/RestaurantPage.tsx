@@ -1,120 +1,136 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Star, Clock, X } from "lucide-react";
 
+/**
+ * Represents a restaurant card shown on the Restaurants page.
+ */
 type Restaurant = {
+  /** Stable identifier used for routing/selection. */
   id: string;
+  /** Display name of the restaurant. */
   name: string;
+  /** Cuisine category (e.g. Italian, Indian). */
   cuisine: string;
+  /** Area/neighbourhood label (e.g. Dublin 2). */
   area: string;
+  /** Estimated delivery time in minutes. */
   etaMins: number;
+  /** Rough price tier indicator. */
   price: "€" | "€€" | "€€€";
-  rating: number; // 0-5
+  /** Rating in the range 0–5. */
+  rating: number;
+  /** Short marketing description shown on the card. */
   blurb: string;
+  /** Tag chips used for display and search matching. */
   tags: string[];
+  /** Image URL used in the restaurant card header. */
   image: string;
 };
 
+/** Hard-coded restaurant catalogue. */
+const restaurants: Restaurant[] = [
+  {
+    id: "luna",
+    name: "Luna Pasta Bar",
+    cuisine: "Italian",
+    area: "Dublin 2",
+    etaMins: 25,
+    price: "€€",
+    rating: 4.6,
+    blurb: "Fresh pasta, small plates, and a great wine list.",
+    tags: ["Pasta", "Wine", "Date night"],
+    image:
+      "https://images.unsplash.com/photo-1608756687911-aa1599ab3bd9?auto=format&fit=crop&w=1200&q=60",
+  },
+  {
+    id: "saffron",
+    name: "Saffron House",
+    cuisine: "Indian",
+    area: "Ranelagh",
+    etaMins: 35,
+    price: "€€",
+    rating: 4.5,
+    blurb: "Big flavours: tandoor specials, curries, and naan.",
+    tags: ["Spicy", "Tandoor", "Comfort"],
+    image:
+      "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1200&q=60",
+  },
+  {
+    id: "kyoto",
+    name: "Kyoto Kitchen",
+    cuisine: "Japanese",
+    area: "Temple Bar",
+    etaMins: 30,
+    price: "€€€",
+    rating: 4.7,
+    blurb: "Sushi, ramen, and izakaya-style bites done properly.",
+    tags: ["Sushi", "Ramen", "Izakaya"],
+    image:
+      "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=1200&q=60",
+  },
+  {
+    id: "camino",
+    name: "El Camino",
+    cuisine: "Mexican",
+    area: "Smithfield",
+    etaMins: 20,
+    price: "€€",
+    rating: 4.4,
+    blurb: "Tacos, burritos, nachos — fast, loud, and tasty.",
+    tags: ["Tacos", "Burritos", "Street food"],
+    image:
+      "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=1200&q=60",
+  },
+  {
+    id: "greenbowl",
+    name: "Green Bowl",
+    cuisine: "Healthy",
+    area: "Grand Canal",
+    etaMins: 18,
+    price: "€€",
+    rating: 4.3,
+    blurb: "Protein bowls, salads, and smoothies — quick & clean.",
+    tags: ["Bowls", "Salads", "High-protein"],
+    image:
+      "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60",
+  },
+  {
+    id: "forge",
+    name: "Burger Forge",
+    cuisine: "American",
+    area: "Dublin 1",
+    etaMins: 22,
+    price: "€",
+    rating: 4.2,
+    blurb: "Smash burgers, crispy fries, and proper shakes.",
+    tags: ["Burgers", "Fries", "Shakes"],
+    image:
+      "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60",
+  },
+];
+
 /**
  * RestaurantsPage
- * Lets the user pick from 6 restaurants (with search + cuisine filter) and routes to /menu.
- * (Later: use /menu/:id or store selected restaurant in state/context.)
+ *
+ * Displays a list of restaurants and lets the user filter them by
+ * free-text search and cuisine dropdown.
  */
 export function RestaurantsPage() {
   const navigate = useNavigate();
 
-  const restaurants: Restaurant[] = [
-    {
-      id: "luna",
-      name: "Luna Pasta Bar",
-      cuisine: "Italian",
-      area: "Dublin 2",
-      etaMins: 25,
-      price: "€€",
-      rating: 4.6,
-      blurb: "Fresh pasta, small plates, and a great wine list.",
-      tags: ["Pasta", "Wine", "Date night"],
-      image:
-        "https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=1200&q=60",
-    },
-    {
-      id: "saffron",
-      name: "Saffron House",
-      cuisine: "Indian",
-      area: "Ranelagh",
-      etaMins: 35,
-      price: "€€",
-      rating: 4.5,
-      blurb: "Big flavours: tandoor specials, curries, and naan.",
-      tags: ["Spicy", "Tandoor", "Comfort"],
-      image:
-        "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=1200&q=60",
-    },
-    {
-      id: "kyoto",
-      name: "Kyoto Kitchen",
-      cuisine: "Japanese",
-      area: "Temple Bar",
-      etaMins: 30,
-      price: "€€€",
-      rating: 4.7,
-      blurb: "Sushi, ramen, and izakaya-style bites done properly.",
-      tags: ["Sushi", "Ramen", "Izakaya"],
-      image:
-        "https://images.unsplash.com/photo-1553621042-f6e147245754?auto=format&fit=crop&w=1200&q=60",
-    },
-    {
-      id: "camino",
-      name: "El Camino",
-      cuisine: "Mexican",
-      area: "Smithfield",
-      etaMins: 20,
-      price: "€€",
-      rating: 4.4,
-      blurb: "Tacos, burritos, nachos — fast, loud, and tasty.",
-      tags: ["Tacos", "Burritos", "Street food"],
-      image:
-        "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=1200&q=60",
-    },
-    {
-      id: "greenbowl",
-      name: "Green Bowl",
-      cuisine: "Healthy",
-      area: "Grand Canal",
-      etaMins: 18,
-      price: "€€",
-      rating: 4.3,
-      blurb: "Protein bowls, salads, and smoothies — quick & clean.",
-      tags: ["Bowls", "Salads", "High-protein"],
-      image:
-        "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=60",
-    },
-    {
-      id: "forge",
-      name: "Burger Forge",
-      cuisine: "American",
-      area: "Dublin 1",
-      etaMins: 22,
-      price: "€",
-      rating: 4.2,
-      blurb: "Smash burgers, crispy fries, and proper shakes.",
-      tags: ["Burgers", "Fries", "Shakes"],
-      image:
-        "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=60",
-    },
-  ];
+  const [query, setQuery] = useState("");
+  const [cuisine, setCuisine] = useState("All");
 
   const cuisines = useMemo(() => {
     const unique = Array.from(new Set(restaurants.map((r) => r.cuisine)));
     return ["All", ...unique];
-  }, [restaurants]);
-
-  const [query, setQuery] = useState("");
-  const [cuisine, setCuisine] = useState("All");
+  }, []);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return restaurants
-      .filter((r) => (cuisine === "All" ? true : r.cuisine === cuisine))
+      .filter((r) => cuisine === "All" || r.cuisine === cuisine)
       .filter((r) => {
         if (!q) return true;
         return (
@@ -124,11 +140,10 @@ export function RestaurantsPage() {
           r.tags.some((t) => t.toLowerCase().includes(q))
         );
       });
-  }, [restaurants, query, cuisine]);
+  }, [query, cuisine]);
 
   const goToMenu = (r: Restaurant) => {
-    // simplest: go to /menu (later: /menu/:id)
-    navigate("/menu");
+    navigate(`/menu/${r.id}`);
   };
 
   return (
@@ -151,8 +166,7 @@ export function RestaurantsPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search by name, area, or tag…"
-                className="w-full rounded-2xl bg-white px-4 py-3 shadow-md outline-none
-                           border border-slate-200 focus:ring-2 focus:ring-slate-300"
+                className="w-full rounded-2xl bg-white px-4 py-3 shadow-md outline-none border border-slate-200 focus:ring-2 focus:ring-slate-300"
               />
               {query && (
                 <button
@@ -161,7 +175,7 @@ export function RestaurantsPage() {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900"
                   aria-label="Clear search"
                 >
-                  ✕
+                  <X size={16} />
                 </button>
               )}
             </div>
@@ -169,8 +183,7 @@ export function RestaurantsPage() {
             <select
               value={cuisine}
               onChange={(e) => setCuisine(e.target.value)}
-              className="rounded-2xl bg-white px-4 py-3 shadow-md outline-none
-                         border border-slate-200 focus:ring-2 focus:ring-slate-300"
+              className="rounded-2xl bg-white px-4 py-3 shadow-md outline-none border border-slate-200 focus:ring-2 focus:ring-slate-300"
             >
               {cuisines.map((c) => (
                 <option key={c} value={c}>
@@ -188,11 +201,8 @@ export function RestaurantsPage() {
               key={r.id}
               type="button"
               onClick={() => goToMenu(r)}
-              className="group text-left rounded-3xl bg-white shadow-md hover:shadow-xl transition
-                         hover:-translate-y-0.5 active:translate-y-0
-                         border border-slate-100 overflow-hidden"
+              className="group text-left rounded-3xl bg-white shadow-md hover:shadow-xl transition hover:-translate-y-0.5 active:translate-y-0 border border-slate-100 overflow-hidden"
             >
-              {/* Image */}
               <div className="h-40 w-full overflow-hidden bg-slate-100">
                 <img
                   src={r.image}
@@ -212,18 +222,19 @@ export function RestaurantsPage() {
                       {r.cuisine} • {r.area}
                     </p>
                   </div>
-
                   <span className="shrink-0 rounded-full bg-slate-900 text-white text-xs px-3 py-1">
                     {r.price}
                   </span>
                 </div>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">
-                    ⭐ {r.rating.toFixed(1)}
+                  <span className="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1 flex items-center gap-1">
+                    <Star size={11} className="text-amber-400 fill-amber-400" />
+                    {r.rating.toFixed(1)}
                   </span>
-                  <span className="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1">
-                    ⏱ {r.etaMins} mins
+                  <span className="rounded-full bg-slate-100 text-slate-700 text-xs px-3 py-1 flex items-center gap-1">
+                    <Clock size={11} />
+                    {r.etaMins} mins
                   </span>
                 </div>
 
@@ -276,3 +287,5 @@ export function RestaurantsPage() {
     </div>
   );
 }
+
+export default RestaurantsPage;

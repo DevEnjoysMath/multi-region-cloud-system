@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -34,7 +34,7 @@ export function LoginPage() {
    *
    * @param e - The React form submission event.
    */
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     mutate(
       { identifier, password },
@@ -47,7 +47,7 @@ export function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Sign in to your account</h1>
-          <p className="text-sm text-muted-foreground">Welcome back 👋</p>
+          <p className="text-sm text-muted-foreground">Welcome back </p>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">

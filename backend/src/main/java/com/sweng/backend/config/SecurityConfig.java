@@ -2,9 +2,12 @@ package com.sweng.backend.config;
 
 import com.sweng.backend.auth.JwtAuthenticationFilter;
 import com.sweng.backend.user.CustomUserDetailsService;
+import java.util.Arrays;
+import java.util.List;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -18,12 +21,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /** Configuration class for Spring Security. */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
   private final CustomUserDetailsService userDetailsService;
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -51,7 +59,8 @@ public class SecurityConfig {
   }
 
   /**
-   * Provides an authentication provider bean.
+   * Provides a DAO authentication provider bean configured with the custom user details service and
+   * password encoder.
    *
    * @return the authentication provider
    */
@@ -63,7 +72,7 @@ public class SecurityConfig {
   }
 
   /**
-   * Provides an authentication manager bean.
+   * Provides an authentication manager bean backed by the DAO authentication provider.
    *
    * @return the authentication manager
    */
@@ -73,7 +82,43 @@ public class SecurityConfig {
   }
 
   /**
+   * Provides a CORS configuration source bean.
+   *
+   * <p>Permits requests from {@code http://localhost:3000} with credentials, allows standard HTTP
+   * methods and headers, and caches preflight responses for one hour.
+   *
+   * @return the CORS configuration source
+   */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedHeaders(
+        Arrays.asList(
+            "Authorization",
+            "Content-Type",
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers",
+            "X-Requested-With",
+            "Cache-Control"));
+    configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L);
+    configuration.setExposedHeaders(List.of("Authorization", "Content-Type"));
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
+  /**
    * Configures the security filter chain.
+   *
+   * <p>Disables CSRF and form-based login, enforces stateless session management, and defines
+   * authorization rules per HTTP method and path. The JWT authentication filter is inserted before
+   * the standard username/password filter.
    *
    * @param http the HTTP security configuration
    * @return the security filter chain
@@ -81,86 +126,69 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable())
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth
-                    // Auth endpoints
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/register")
+                auth.requestMatchers(CorsUtils::isPreFlightRequest)
                     .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/login")
+                    .requestMatchers(HttpMethod.POST, "/api/auth/register")
                     .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/auth/logout")
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/logout")
                     .authenticated()
-                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/auth/me")
+                    .requestMatchers(HttpMethod.GET, "/api/auth/me")
                     .authenticated()
-                    // Permit unsupported methods on auth endpoints to get 405
-                    .requestMatchers(
-                        "/api/auth/register", "/api/auth/login", "/api/auth/logout", "/api/auth/me")
+                    .requestMatchers("/api/auth/**")
                     .permitAll()
-                    // Actuator and error
-                    .requestMatchers("/actuator/**")
+                    .requestMatchers("/actuator/**", "/error")
                     .permitAll()
-                    .requestMatchers("/error")
+                    .requestMatchers(HttpMethod.PUT, "/api/restaurants")
                     .permitAll()
-                    // Permit unsupported methods FIRST (before authenticated rules)
-                    // Restaurant unsupported methods - must come before /** rules
-                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/restaurants")
+                    .requestMatchers(HttpMethod.DELETE, "/api/restaurants")
                     .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/restaurants")
+                    .requestMatchers(HttpMethod.POST, "/api/restaurants/{restaurantId}")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.POST, "/api/restaurants/{restaurantId}")
+                    .requestMatchers(HttpMethod.PATCH, "/api/restaurants", "/api/restaurants/**")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.PATCH,
-                        "/api/restaurants",
-                        "/api/restaurants/**")
+                    .requestMatchers(HttpMethod.PUT, "/api/orders")
                     .permitAll()
-                    // Order unsupported methods - must come before /** rules
-                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/orders")
+                    .requestMatchers(HttpMethod.DELETE, "/api/orders")
                     .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders")
+                    .requestMatchers(HttpMethod.POST, "/api/orders/{orderId}")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.POST, "/api/orders/{orderId}")
+                    .requestMatchers(HttpMethod.PATCH, "/api/orders", "/api/orders/**")
                     .permitAll()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.PATCH, "/api/orders", "/api/orders/**")
+                    .requestMatchers(HttpMethod.GET, "/api/restaurants", "/api/restaurants/**")
                     .permitAll()
-                    // Restaurant endpoints - specific methods
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.GET,
-                        "/api/restaurants",
-                        "/api/restaurants/**")
-                    .permitAll()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/restaurants")
+                    .requestMatchers(HttpMethod.POST, "/api/restaurants")
                     .authenticated()
-                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/restaurants/**")
+                    .requestMatchers(HttpMethod.PUT, "/api/restaurants/**")
                     .authenticated()
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.DELETE, "/api/restaurants/**")
+                    .requestMatchers(HttpMethod.DELETE, "/api/restaurants/**")
                     .authenticated()
-                    // Order endpoints - specific methods
-                    .requestMatchers(
-                        org.springframework.http.HttpMethod.GET, "/api/orders", "/api/orders/**")
+                    .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**")
                     .authenticated()
-                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/orders")
+                    .requestMatchers(HttpMethod.POST, "/api/orders")
                     .authenticated()
-                    .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/orders/**")
+                    .requestMatchers(HttpMethod.PUT, "/api/orders/**")
                     .authenticated()
-                    .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/orders/**")
+                    .requestMatchers(HttpMethod.DELETE, "/api/orders/**")
                     .authenticated()
                     .anyRequest()
-                    .authenticated());
-
-    http.exceptionHandling(
-        ex -> ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
-
-    http.authenticationProvider(authenticationProvider());
-    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                    .authenticated())
+        .exceptionHandling(
+            ex ->
+                ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    .accessDeniedHandler(
+                        (req, res, e) -> res.setStatus(HttpStatus.FORBIDDEN.value())))
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable())
+        .authenticationProvider(authenticationProvider())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

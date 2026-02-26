@@ -450,14 +450,14 @@ components:
       description: Request body for user authentication
       additionalProperties: false
       required:
-        - username
+        - identifier
         - password
       properties:
-        username:
+        identifier:
           type: string
-          description: User's registered username (letters, numbers, underscores, hyphens only)
-          pattern: "^[a-zA-Z0-9_-]+$"
+          description: Username or email address
           minLength: 1
+          maxLength: 120
         password:
           type: string
           description: User's password (ASCII printable, at least one non-space)

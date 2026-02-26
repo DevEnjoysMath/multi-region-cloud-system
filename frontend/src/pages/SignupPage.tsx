@@ -1,30 +1,47 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSignup } from "../api/authhooks";
 
 /**
  * SignupPage component.
  *
- * Provides user registration functionality.
- * Allows users to:
- * - Enter name, email, and password
- * - Create a new account
- * - Register using Google authentication
+ * Provides user registration functionality. Collects a username, first name,
+ * last name, email address, and password. On successful registration the user
+ * is redirected to `/restaurants`.
  *
- * Uses the useSignup API hook to communicate
- * with the backend authentication service.
+ * Uses the {@link useSignup} hook to communicate with the backend authentication service.
+ *
+ * @returns The signup page JSX element.
+ *
+ * @example
+ * // Typically mounted by the router, no props required.
+ * <SignupPage />
  */
 export function SignupPage() {
   const { mutate, isPending, error } = useSignup();
+  const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  /**
+   * Handles the signup form submission.
+   *
+   * Prevents the default browser form submission and calls the signup mutation
+   * with the collected user details. Navigates to `/restaurants` on success.
+   *
+   * @param e - The React form submission event.
+   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    mutate({ name, email, password });
+    mutate(
+      { username, firstName, lastName, email, password },
+      { onSuccess: () => navigate("/restaurants") },
+    );
   };
 
   return (
@@ -36,23 +53,66 @@ export function SignupPage() {
         <p className="text-gray-500 text-center mb-6">
           Join us and get started
         </p>
-
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium mb-1"
+            >
+              Username
+            </label>
             <input
+              id="username"
               type="text"
-              placeholder="John Doe"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="johndoe"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium mb-1"
+              >
+                First name
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                placeholder="John"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+                className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+            <div className="flex-1">
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium mb-1"
+              >
+                Last name
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                placeholder="Doe"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+                className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
+              Email
+            </label>
             <input
+              id="email"
               type="email"
               placeholder="you@example.com"
               value={email}
@@ -61,10 +121,15 @@ export function SignupPage() {
               className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium mb-1"
+            >
+              Password
+            </label>
             <input
+              id="password"
               type="password"
               placeholder="••••••••"
               value={password}
@@ -73,18 +138,14 @@ export function SignupPage() {
               className="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
           {error && <p className="text-red-500 text-sm">{error.message}</p>}
-
           <Button
             type="submit"
             disabled={isPending}
             className="w-full h-11 bg-indigo-600 hover:bg-indigo-700"
           >
-            {isPending ? "Creating account..." : "Create account"}
+            {isPending ? "Creating account…" : "Create account"}
           </Button>
-
-          {/* Divider */}
           <div className="relative text-center text-sm">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t" />
@@ -93,8 +154,6 @@ export function SignupPage() {
               OR
             </span>
           </div>
-
-          {/* Google Button */}
           <Button
             type="button"
             variant="outline"
@@ -125,7 +184,6 @@ export function SignupPage() {
             Sign up with Google
           </Button>
         </form>
-
         <p className="text-center text-sm text-gray-500 mt-6">
           Already have an account?{" "}
           <Link to="/login" className="text-indigo-600 hover:underline">

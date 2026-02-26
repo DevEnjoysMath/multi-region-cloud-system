@@ -4,8 +4,8 @@ import { apiFetch } from "./clients";
  * Request payload for user login.
  */
 export interface LoginRequest {
-  /** User email address */
-  email: string;
+  /** Username or email address */
+  identifier: string;
   /** User password */
   password: string;
 }
@@ -14,8 +14,12 @@ export interface LoginRequest {
  * Request payload for user registration.
  */
 export interface SignupRequest {
-  /** User full name */
-  name: string;
+  /** Unique username */
+  username: string;
+  /** User first name */
+  firstName: string;
+  /** User last name */
+  lastName: string;
   /** User email address */
   email: string;
   /** User password */
@@ -26,24 +30,28 @@ export interface SignupRequest {
  * Response returned after successful authentication.
  */
 export interface AuthResponse {
-  /** JWT authentication token */
-  token: string;
+  /** JWT access token */
+  accessToken: string;
+  /** Token type, typically "Bearer" */
+  tokenType: string;
+  /** Token expiration time in seconds */
+  expiresIn: number;
   /** Authenticated user details */
   user: {
     /** User ID */
     id: string;
-    /** User name */
-    name: string;
+    /** Username */
+    username: string;
     /** User email address */
     email: string;
   };
 }
 
 /**
- * Sends login request to backend authentication endpoint.
+ * Sends a login request to the backend authentication endpoint.
  *
- * @param data - Login credentials (email and password)
- * @returns AuthResponse containing JWT token and user data
+ * @param data - Login credentials containing an identifier (email or username) and password
+ * @returns AuthResponse containing the JWT access token and user data
  */
 export const login = (data: LoginRequest) =>
   apiFetch<AuthResponse>("/auth/login", {
@@ -52,13 +60,13 @@ export const login = (data: LoginRequest) =>
   });
 
 /**
- * Sends signup request to backend authentication endpoint.
+ * Sends a signup request to the backend authentication endpoint.
  *
- * @param data - Signup information (name, email, password)
- * @returns AuthResponse containing JWT token and user data
+ * @param data - Registration information including username, name, email, and password
+ * @returns AuthResponse containing the JWT access token and user data
  */
 export const signup = (data: SignupRequest) =>
-  apiFetch<AuthResponse>("/auth/signup", {
+  apiFetch<AuthResponse>("/auth/register", {
     method: "POST",
     body: JSON.stringify(data),
   });

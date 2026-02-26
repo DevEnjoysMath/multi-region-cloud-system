@@ -61,4 +61,17 @@ public class UserService {
         .findByUsername(username)
         .orElseThrow(() -> new RuntimeException("User not found"));
   }
+
+  /**
+   * Finds a user by email.
+   *
+   * @param email the email
+   * @return the user
+   * @throws RuntimeException if user not found
+   */
+  public User findByEmail(String email) {
+    return userRepository
+        .findByEmail(email)
+        .orElseThrow(() -> new RuntimeException("User not found"));
+  }
 }

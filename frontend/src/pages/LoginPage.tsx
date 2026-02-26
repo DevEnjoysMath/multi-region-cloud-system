@@ -1,41 +1,70 @@
-import { Link } from "react-router-dom";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useLogin } from "../api/authhooks";
 
 /**
  * LoginPage component.
  *
- * Renders the user login form.
- * Allows users to:
- * - Enter email and password
- * - Navigate to forgot password page
- * - Authenticate using Google
+ * Renders a card-style login form accepting either an email address or username
+ * alongside a password. On successful authentication the user is redirected to
+ * `/dashboard`. Also provides a Google SSO button and a link to `/signup`.
  *
- * This component connects to backend authentication
- * through the login API hook.
+ * Uses the {@link useLogin} hook to communicate with the backend authentication service.
+ *
+ * @returns The login page JSX element.
+ *
+ * @example
+ * // Typically mounted by the router, no props required.
+ * <LoginPage />
  */
 export function LoginPage() {
+  const { mutate, isPending, error } = useLogin();
+  const navigate = useNavigate();
+
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+
+  /**
+   * Handles the login form submission.
+   *
+   * Prevents the default browser form submission and calls the login mutation
+   * with the current identifier and password. Navigates to `/dashboard` on success.
+   *
+   * @param e - The React form submission event.
+   */
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    mutate(
+      { identifier, password },
+      { onSuccess: () => navigate("/dashboard") },
+    );
+  };
+
   return (
-    <div className="w-full flex justify-center px-4">
+    <div className="w-full min-h-screen flex justify-center items-start pt-16 px-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-8 space-y-6">
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Sign in to your account</h1>
-          <p className="text-sm text-muted-foreground">Welcome back 👋</p>
+          <p className="text-sm text-muted-foreground">Welcome back </p>
         </div>
-
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label htmlFor="identifier">Email or username</Label>
             <input
-              type="email"
-              placeholder="you@example.com"
+              id="identifier"
+              type="text"
+              placeholder="Email or username"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              required
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
           <div className="space-y-2">
             <div className="flex justify-between items-center">
-              <Label>Password</Label>
+              <Label htmlFor="password">Password</Label>
               <Link
                 to="/forgot-password"
                 className="text-sm text-indigo-600 hover:underline"
@@ -43,19 +72,25 @@ export function LoginPage() {
                 Forgot password?
               </Link>
             </div>
-
             <input
+              id="password"
               type="password"
               placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className="w-full h-11 px-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
-
-          <Button className="w-full h-11 bg-indigo-600 hover:bg-indigo-700">
-            Sign in
+          {error && <p className="text-red-500 text-sm">{error.message}</p>}
+          <Button
+            type="submit"
+            disabled={isPending}
+            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700"
+          >
+            {isPending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
-
         <div className="relative text-center text-sm">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
@@ -64,12 +99,10 @@ export function LoginPage() {
             OR
           </span>
         </div>
-
         <Button
           variant="outline"
           className="w-full flex items-center justify-center gap-3 h-11"
         >
-          {/* Google SVG */}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 48 48"
@@ -94,9 +127,8 @@ export function LoginPage() {
           </svg>
           Sign in with Google
         </Button>
-
         <p className="text-sm text-center text-muted-foreground">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/signup" className="text-indigo-600 hover:underline">
             Create account
           </Link>

@@ -11,7 +11,7 @@ import { UtensilsCrossed } from "lucide-react";
 import { LoginPage } from "./pages/LoginPage";
 import { SignupPage } from "./pages/SignupPage";
 import { ForgotPasswordPage } from "./pages/ForgotPasswordPage";
-import { LandingPage } from "./pages/LandingPage";
+import HomePage from "./pages/HomePage";
 import { RestaurantsPage } from "./pages/RestaurantPage";
 import OrdersPage from "./pages/OrdersPage";
 import DatabaseHealth from "./pages/DatabaseHealth";
@@ -31,7 +31,7 @@ function AnimatedRoutes() {
           path="/"
           element={
             <Page>
-              <LandingPage />
+              <HomePage />
             </Page>
           }
         />

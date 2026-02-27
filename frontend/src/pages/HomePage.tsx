@@ -174,7 +174,7 @@ export default function HomePage() {
 
             <div className="pt-3 flex flex-wrap justify-center gap-3">
               <Button asChild className="rounded-xl px-6">
-                <Link to="/orders">Go to Orders</Link>
+                <Link to="/dashboard">Go to Orders</Link>
               </Button>
               <Button
                 asChild

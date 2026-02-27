@@ -455,7 +455,8 @@ components:
       properties:
         identifier:
           type: string
-          description: Username or email address
+          description: Username or email address (must contain at least one non-space character)
+          pattern: "^(?!\\s*$).+"
           minLength: 1
           maxLength: 120
         password:

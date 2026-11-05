@@ -25,7 +25,9 @@ What happens to a restaurant order when a backend goes offline? Our team built a
 
 ### Backend failover · 3 min 8 sec
 
-[Watch the full recording ↗](docs/media/backend-failover.mp4?raw=1)
+<p align="center">
+  <img src="docs/media/backend-failover.gif" alt="Full failover walkthrough: requests reach both backends, one service stops, and the ingress health check stays UP." width="820">
+</p>
 
 At **1:00**, repeated requests through nginx show both backend hostnames. Around **2:00**, after one backend service stops, the ingress health check returns `UP`. The next request shows which backend is answering.
 
@@ -33,7 +35,9 @@ At **1:00**, repeated requests through nginx show both backend hostnames. Around
 
 ### Restaurant ordering · 9 sec
 
-[Watch the frontend tour ↗](docs/media/frontend-demo.webm?raw=1)
+<p align="center">
+  <img src="docs/media/frontend-demo.gif" alt="Restaurant ordering walkthrough: search for Luna Pasta Bar, open its menu, add a dish, and review the cart." width="700">
+</p>
 
 Search for **Luna Pasta Bar**, open its menu, add a dish, and review the cart. The frontend uses a sample Dublin catalogue and keeps the cart in browser state.
 

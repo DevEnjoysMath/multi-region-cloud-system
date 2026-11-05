@@ -96,9 +96,9 @@ The API defines **14 operations** for authentication, restaurants, and orders. T
 
 **Dev Joshi · Cloud & DevOps Engineer**
 
-- **Database** — I worked on the distributed PostgreSQL configuration and documented how the coordinator and workers fit into the architecture. [Implementation](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea)
-- **Credentials** — I integrated encrypted database credentials into service startup so PostgreSQL could apply them after it was ready. [Database module](nix/nixos-modules/postgres-service.nix)
-- **Monitoring** — I added a VM test that starts Prometheus, Grafana, and Loki together and checks their services and ports. [Monitoring test](nix/checks/monitoring.nix)
+- **Database** : I worked on the distributed PostgreSQL configuration and documented how the coordinator and workers fit into the architecture. [Implementation](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea)
+- **Credentials** : I integrated encrypted database credentials into service startup so PostgreSQL could apply them after it was ready. [Database module](nix/nixos-modules/postgres-service.nix)
+- **Monitoring** : I added a VM test that starts Prometheus, Grafana, and Loki together and checks their services and ports. [Monitoring test](nix/checks/monitoring.nix)
 
 <a name="team-and-contributions"></a>
 

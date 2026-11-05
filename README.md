@@ -57,11 +57,9 @@ nginx routes a request to either Spring Boot backend. Both backends query a Post
   <a href="docs/media/backend-architecture.png"><img src="docs/media/backend-architecture.png" alt="Full multi-region design from DNS and ingress through Spring Boot, Citus, and monitoring" width="760"></a>
 </p>
 
-<p align="center"><em>The design uses Dublin and London to illustrate regional failover. Select the diagram for the full-size view.</em></p>
-
 ### Google Cloud deployment
 
-We placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring. The console snapshot shows all seven instances running.
+I placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring. The console snapshot shows all seven instances running.
 
 <p align="center">
   <a href="docs/media/gcp-nodes.png"><img src="docs/media/gcp-nodes.png" alt="Full Compute Engine console showing seven running VMs across zones A and B" width="700"></a>

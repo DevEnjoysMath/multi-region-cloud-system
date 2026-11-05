@@ -2,9 +2,15 @@
 
 A Trinity College Dublin software engineering project mentored by Toast. A diner can browse Dublin restaurants, choose a meal, and review a cart. The team designed the ordering service for multiple regions and deployed seven Google Cloud VMs across two zones to demonstrate the architecture.
 
-[Watch the frontend demo](docs/media/frontend-demo.webm) · [Architecture](#system-architecture) · [REST API](#rest-api) · [Team](#team-and-contributions) · [Run locally](#run-locally)
+[Full backend failover demo · 3:08](#backend-failover-demo) · [Frontend tour · 0:09](#frontend-demo) · [Architecture](#system-architecture) · [REST API](#rest-api) · [Team](#team-and-contributions) · [Run locally](#run-locally)
 
 **Dev Joshi’s contribution** · distributed PostgreSQL, database credential handling, and monitoring on NixOS. [See the implementation and team credits](#team-and-contributions).
+
+## Backend failover demo
+
+[Watch or download the full recording (MP4, 3:08)](docs/media/backend-failover.mp4?raw=1)
+
+The team sends repeated requests through nginx and checks which backend answers. Around **1:00**, the terminal shows responses from both hosts. Around **2:00**, after a backend service is stopped, the ingress health check still reports `UP`. The next server-info request identifies the backend serving traffic.
 
 ## Frontend demo
 

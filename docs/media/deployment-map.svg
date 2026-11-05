@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 250" role="img" aria-labelledby="title desc">
+<title id="title">Google Cloud deployment across two zones</title>
+<desc id="desc">Seven Compute Engine instances in us-central1. Zone A hosts ingress, backend-a, db-worker-1, the coordinator, and monitoring. Zone B hosts backend-b and db-worker-2.</desc>
+<defs><style>
+text{font-family:Arial,Helvetica,sans-serif;fill:#33261f}.eyebrow{font-size:13px;letter-spacing:1.8px;font-weight:bold}.zone{font-size:23px;font-weight:bold}.node{font-family:monospace;font-size:17px}.soft{fill:#6c5244}
+</style></defs>
+<rect width="840" height="250" rx="18" fill="#fff5ed"/>
+<text x="32" y="37" class="eyebrow">GOOGLE CLOUD</text><text x="808" y="37" text-anchor="end" class="eyebrow soft">7 VMs · 2 ZONES</text>
+<rect x="28" y="57" width="383" height="166" rx="12" fill="#fffdfb" stroke="#e7cdbc"/><rect x="429" y="57" width="383" height="166" rx="12" fill="#fffdfb" stroke="#e7cdbc"/>
+<circle cx="56" cy="91" r="6" fill="#c7511d"/><circle cx="457" cy="91" r="6" fill="#c7511d"/>
+<text x="73" y="99" class="zone">us-central1-a</text><text x="474" y="99" class="zone">us-central1-b</text>
+<path d="M52 116h335m66 0h335" stroke="#eddbce"/>
+<g class="node"><text x="52" y="148">backend-a</text><text x="230" y="148">db-worker-1</text><text x="52" y="178">ingress</text><text x="230" y="178">db-coordinator</text><text x="52" y="208">monitoring</text><text x="453" y="148">backend-b</text><text x="631" y="148">db-worker-2</text></g>
+</svg>

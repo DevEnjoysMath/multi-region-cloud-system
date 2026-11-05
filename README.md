@@ -1,62 +1,111 @@
-# Toast | Multi-region restaurant ordering
+<h1 align="center">🍞 Toast</h1>
 
-A Trinity College Dublin software engineering project mentored by Toast. A diner can browse Dublin restaurants, choose a meal, and review a cart. The team designed the ordering service for multiple regions and deployed seven Google Cloud VMs across two zones to demonstrate the architecture.
+<p align="center">
+  <strong>Multi-region restaurant ordering</strong><br>
+  Trinity College Dublin · Group 26 · Mentored by Toast
+</p>
 
-[Full backend failover demo · 3:08](#backend-failover-demo) · [Frontend tour · 0:09](#frontend-demo) · [Architecture](#system-architecture) · [REST API](#rest-api) · [Team](#team-and-contributions) · [Run locally](#run-locally)
+<p align="center">
+  <a href="#demos">Demos</a> · <a href="#architecture">Architecture</a> · <a href="#rest-api">REST API</a> · <a href="#my-role">My role</a> · <a href="#team">Team</a> · <a href="#run-locally">Run locally</a>
+</p>
 
-**Dev Joshi’s contribution** · distributed PostgreSQL, database credential handling, and monitoring on NixOS. [See the implementation and team credits](#team-and-contributions).
+---
 
-## Backend failover demo
+## About
 
-[Watch or download the full recording (MP4, 3:08)](docs/media/backend-failover.mp4?raw=1)
+What happens to a restaurant order when a backend goes offline? Our team built a React ordering interface and a Spring Boot service to explore that question. We designed for multiple regions and tested backend failover on seven Google Cloud VMs spread across two zones in `us-central1`.
 
-The team sends repeated requests through nginx and checks which backend answers. Around **1:00**, the terminal shows responses from both hosts. Around **2:00**, after a backend service is stopped, the ingress health check still reports `UP`. The next server-info request identifies the backend serving traffic.
+<p align="center">
+  <a href="docs/media/deployment-map.svg"><img src="docs/media/deployment-map.svg" alt="Seven Google Cloud instances arranged by deployment zone" width="700"></a>
+</p>
 
-## Frontend demo
+## Demos
 
-[![Restaurant browser showing cuisine filters and Dublin restaurant cards](docs/media/restaurants.png)](docs/media/frontend-demo.webm)
+<a name="backend-failover-demo"></a>
 
-The recording follows one order through the React UI. Search for **Luna**, open **Luna Pasta Bar**, add a menu item, and review the cart total. The catalogue uses sample data and the cart runs in browser state. The backend contract and its tests are linked below.
+### Backend failover · 3 min 8 sec
 
-## System architecture
+[Watch the full recording ↗](docs/media/backend-failover.mp4?raw=1)
 
-[![Multi-region design showing the client, edge, nginx ingress, regional backends, distributed database, and monitoring](docs/media/backend-architecture.png)](docs/media/backend-architecture.png)
+At **1:00**, repeated requests through nginx show both backend hostnames. Around **2:00**, after one backend service stops, the ingress health check returns `UP`. The next request shows which backend is answering.
 
-*The team’s design uses Dublin and London to illustrate how traffic could move between regions.*
+<a name="frontend-demo"></a>
 
-nginx forwards traffic to either Spring Boot backend and can retry another upstream on a timeout or selected errors. Both backends connect to the PostgreSQL **Citus coordinator**, which routes distributed queries to the workers. The separate monitoring node runs Prometheus, Grafana, and Loki.
+### Restaurant ordering · 9 sec
+
+[Watch the frontend tour ↗](docs/media/frontend-demo.webm?raw=1)
+
+Search for **Luna Pasta Bar**, open its menu, add a dish, and review the cart. The frontend uses a sample Dublin catalogue and keeps the cart in browser state.
+
+<p align="center">
+  <a href="docs/media/restaurants.png"><img src="docs/media/restaurants.png" alt="The full restaurant browser, including the filters and both rows of Dublin restaurants" width="700"></a>
+</p>
+
+---
+
+<a name="system-architecture"></a>
+
+## Architecture
+
+nginx routes a request to either Spring Boot backend. Both backends query a PostgreSQL **Citus coordinator**, which sends distributed queries to the workers. Prometheus collects metrics, Loki stores logs, and Grafana displays them on a separate monitoring node.
+
+<p align="center">
+  <a href="docs/media/backend-architecture.png"><img src="docs/media/backend-architecture.png" alt="Full multi-region design from DNS and ingress through Spring Boot, Citus, and monitoring" width="760"></a>
+</p>
+
+<p align="center"><em>The design uses Dublin and London to illustrate regional failover. Select the diagram for the full-size view.</em></p>
 
 ### Google Cloud deployment
 
-The Compute Engine snapshot shows **seven running VMs** in one region. The team placed one backend and one database worker in each of `us-central1-a` and `us-central1-b`. The coordinator, ingress, and monitoring nodes ran in zone A.
+We placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring. The console snapshot shows all seven instances running.
 
-![Compute Engine snapshot showing VM names, running status, and zones](docs/media/gcp-nodes.png)
+<p align="center">
+  <a href="docs/media/gcp-nodes.png"><img src="docs/media/gcp-nodes.png" alt="Full Compute Engine console showing seven running VMs across zones A and B" width="700"></a>
+</p>
 
-The checked-in NixOS fleet configuration uses EC2 defaults. [Node definitions](nix/nodes.nix) · [Ingress retry policy](nix/nixos-modules/nginx-ingress.nix) · [Architecture notes](docs/src/infrastructure/architecture.md)
+[Node definitions](nix/nodes.nix) · [Ingress retry policy](nix/nixos-modules/nginx-ingress.nix) · [Architecture notes](docs/src/infrastructure/architecture.md)
+
+---
 
 ## REST API
 
-The OpenAPI contract groups 14 operations into three areas. The local API root is `http://localhost:8080/api`.
+The API defines **14 operations** for authentication, restaurants, and orders. The diagram follows a customer from registration to checkout, then shows how staff retrieve pending orders and update their status.
 
-The sequence diagram follows a customer from registration through order creation, then shows how staff retrieve pending orders and update their status.
-
-![REST API sequence from customer login and order creation to staff status updates](docs/media/order-sequence.png)
+<p align="center">
+  <a href="docs/media/order-sequence.png"><img src="docs/media/order-sequence.png" alt="Full REST sequence diagram showing customer, API, database, and staff interactions" width="700"></a>
+</p>
 
 <details>
-<summary>View the OpenAPI file rendered in Swagger Editor</summary>
+<summary>View the OpenAPI specification in Swagger Editor</summary>
 
-
-[![Swagger Editor rendering of the Restaurant Ordering API specification](docs/media/openapi.png)](https://editor.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2FDevEnjoysMath%2Fmulti-region-cloud-system%2Fmain%2Fspecs%2Fopenapi.yaml)
+<p align="center">
+  <a href="docs/media/openapi.png"><img src="docs/media/openapi.png" alt="Swagger Editor with the source YAML and its rendered endpoint list side by side" width="700"></a>
+</p>
 
 </details>
 
-[Explore the rendered OpenAPI reference](https://editor.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2FDevEnjoysMath%2Fmulti-region-cloud-system%2Fmain%2Fspecs%2Fopenapi.yaml) · [Read the YAML](specs/openapi.yaml) · [See how Schemathesis exercises the contract against Spring Boot](nix/checks/health.nix)
+[Explore the interactive reference](https://editor.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2FDevEnjoysMath%2Fmulti-region-cloud-system%2Fmain%2Fspecs%2Fopenapi.yaml) · [OpenAPI YAML](specs/openapi.yaml) · [Contract tests](nix/checks/health.nix)
 
-## Team and contributions
+---
 
-**Dev Joshi · Cloud & DevOps Engineer.** Dev contributed the distributed PostgreSQL configuration and architecture notes, integrated encrypted database credentials into service startup, and added a monitoring VM test that starts Prometheus, Grafana, and Loki together. [Database module](nix/nixos-modules/postgres-service.nix) · [Monitoring test](nix/checks/monitoring.nix)
+## My role
 
-![Project team chart with portraits and roles for the eight contributors listed below](docs/media/team.jpg)
+**Dev Joshi · Cloud & DevOps Engineer**
+
+- **Database** — I worked on the distributed PostgreSQL configuration and documented how the coordinator and workers fit into the architecture. [Implementation](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea)
+- **Credentials** — I integrated encrypted database credentials into service startup so PostgreSQL could apply them after it was ready. [Database module](nix/nixos-modules/postgres-service.nix)
+- **Monitoring** — I added a VM test that starts Prometheus, Grafana, and Loki together and checks their services and ports. [Monitoring test](nix/checks/monitoring.nix)
+
+<a name="team-and-contributions"></a>
+
+## Team
+
+<p align="center">
+  <a href="docs/media/team.jpg"><img src="docs/media/team.jpg" alt="Group 26 team portraits with the eight contributors and their roles" width="620"></a>
+</p>
+
+<details>
+<summary>Explore all eight contributors and their work</summary>
 
 | Contributor | Project role | Selected work |
 | --- | --- | --- |
@@ -68,6 +117,10 @@ The sequence diagram follows a customer from registration through order creation
 | Erin Ryan | Frontend Engineer | [Built the menu, cart, and checkout UI](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/a01f4d9). |
 | Dev Joshi | Cloud & DevOps Engineer | [Added distributed PostgreSQL and documented the architecture](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea). |
 | Darragh | Backend Engineer | [Implemented the restaurant and order APIs with JPA and integration tests](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/cab0410). |
+
+</details>
+
+---
 
 ## Run locally
 

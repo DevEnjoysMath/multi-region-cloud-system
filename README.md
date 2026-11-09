@@ -15,9 +15,6 @@
 
 What happens to a restaurant order when a backend goes offline? Our team built a React ordering interface and a Spring Boot service to explore that question. We designed for multiple regions and tested backend failover on seven Google Cloud VMs spread across two zones in `us-central1`.
 
-<p align="center">
-  <a href="docs/media/deployment-map.svg"><img src="docs/media/deployment-map.svg" alt="Seven Google Cloud instances arranged by deployment zone" width="700"></a>
-</p>
 
 ## Demos
 

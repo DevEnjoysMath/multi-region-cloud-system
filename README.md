@@ -89,13 +89,25 @@ At **1:00**, repeated requests through nginx show both backend hostnames. Around
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/media/architecture-dark.svg">
-    <img src="docs/media/architecture-light.svg" width="100%" alt="Deployed architecture: customers reach an nginx ingress in us-central1-a, which load-balances between backend-a in zone A and backend-b in zone B. Both backends query the Citus coordinator, which distributes queries to db-worker-1 and db-worker-2. A monitoring node runs Prometheus, Loki, and Grafana.">
+    <img src="docs/media/architecture-light.svg" width="100%" alt="System design across two Google Cloud zones. Step 1: the browser sends a request to the nginx ingress in us-central1-a. Step 2: nginx forwards it to backend-a in zone A or backend-b in zone B. Step 3: the stateless backend queries the Citus coordinator, where all tables are stored today. Dashed lines show the planned sharding of orders by restaurant_id across the two workers. A monitoring node runs Prometheus, Loki, and Grafana.">
   </picture>
 </p>
 
-nginx routes a request to either Spring Boot backend. Both backends query a PostgreSQL **Citus coordinator**, which sends distributed queries to the workers. Prometheus collects metrics, Loki stores logs, and Grafana displays them on a separate monitoring node.
+A request takes three hops:
+
+1. The browser sends it to nginx on the ingress VM.
+2. nginx passes it to `backend-a` or `backend-b` in turn. If a backend errors, times out, or returns 502 or 503, nginx retries on the other one. This is what the failover demo shows.
+3. The backend keeps no session state. It validates the JWT on the request, then reads and writes through the PostgreSQL **Citus coordinator**.
+
+Both workers are registered with the coordinator, but no tables are distributed yet, so all data sat on the coordinator in the demo. The design is to shard `orders` by `restaurant_id`. Prometheus, Loki, and Grafana run on a separate monitoring node.
 
 On Google Cloud, I placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring.
+
+### Limits and next steps
+
+- **Single points of failure.** The ingress and the coordinator each run on one VM in zone A. Next: a second ingress behind a cloud load balancer, and a standby coordinator in zone B.
+- **No sharding yet.** Next: distribute `orders` by `restaurant_id` and make `restaurants` a reference table.
+- **One region.** Both zones are in `us-central1`. Serving from two regions would also need the database replicated between them.
 
 <details>
 <summary>See all seven instances running in the Compute Engine console</summary>

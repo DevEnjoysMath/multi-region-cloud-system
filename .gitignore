@@ -29,3 +29,6 @@ backend/bun
 backend/headscale
 backend/monitoring
 
+
+# Gradle cache
+.gradle/

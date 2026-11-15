@@ -1,26 +1,78 @@
-<h1 align="center">🍞 Toast</h1>
-
 <p align="center">
-  <strong>Multi-region restaurant ordering</strong><br>
-  Trinity College Dublin · Group 26 · Mentored by Toast
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/media/banner-dark.svg">
+    <img src="docs/media/banner-light.svg" width="100%" alt="Toast: multi-region restaurant ordering. Orders pass through an nginx ingress to backend-a and backend-b in turn. When backend-b stops, the ingress retries on backend-a and the health check stays UP.">
+  </picture>
 </p>
 
 <p align="center">
-  <a href="#demos">Demos</a> · <a href="#architecture">Architecture</a> · <a href="#rest-api">REST API</a> · <a href="#my-role">My role</a> · <a href="#team">Team</a> · <a href="#run-locally">Run locally</a>
+  What happens to a restaurant order when a backend goes offline?
+</p>
+
+<p align="center">
+  <a href="#ordering-demo">Ordering demo</a> ·
+  <a href="#failover">Failover</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#rest-api">REST API</a> ·
+  <a href="#my-role">My role</a> ·
+  <a href="#team">Team</a> ·
+  <a href="#run-locally">Run locally</a>
 </p>
 
 ---
 
-## About
+Our team built a React ordering interface and a Spring Boot service to explore that question. We designed for multiple regions and tested backend failover on seven Google Cloud VMs spread across two zones in `us-central1`.
 
-What happens to a restaurant order when a backend goes offline? Our team built a React ordering interface and a Spring Boot service to explore that question. We designed for multiple regions and tested backend failover on seven Google Cloud VMs spread across two zones in `us-central1`.
+A Trinity College Dublin Software Engineering project by Group 26, mentored by Toast.
 
+| Layer          | Built with                                                                     | Code                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| Frontend       | React 19, TypeScript, Tailwind CSS, Bun                                        | [`frontend/`](frontend)                                                                                            |
+| Backend        | Java 25, Spring Boot 4, Spring Security with JWT, JPA                          | [`backend/`](backend)                                                                                              |
+| Database       | PostgreSQL with Citus: one coordinator, two workers                            | [`db-coordinator.nix`](nix/nixos-modules/db-coordinator.nix)<br>[`db-worker.nix`](nix/nixos-modules/db-worker.nix) |
+| Infrastructure | NixOS flakes, nginx ingress, Tailscale mesh modules, ragenix-encrypted secrets | [`nix/`](nix)                                                                                                      |
+| Monitoring     | Prometheus, Loki, Grafana                                                      | [`monitoring-node.nix`](nix/nixos-modules/monitoring-node.nix)                                                     |
+| Testing        | Schemathesis contract tests, NixOS VM tests                                    | [`nix/checks/`](nix/checks)                                                                                        |
 
-## Demos
+<a name="frontend-demo"></a>
+
+## Ordering demo
+
+<p align="center">
+  <img src="docs/media/frontend-demo.gif" alt="Restaurant ordering walkthrough: search for Luna Pasta Bar, open its menu, add a dish, and review the cart." width="760">
+</p>
+
+Search for **Luna Pasta Bar**, open its menu, add a dish, and review the cart. The frontend uses a sample Dublin catalogue and keeps the cart in browser state. [See the full restaurant browser](docs/media/restaurants.png).
 
 <a name="backend-failover-demo"></a>
 
-### Backend failover · 3 min 8 sec
+## Failover
+
+Requests through nginx reach both backends. After the backend service on one VM stops, the ingress health check still returns `UP`, and the next request shows which backend is answering.
+
+```console
+$ for i in {1..6}; do curl -s http://$INGRESS/api/server-info | grep hostName; done
+{"hostName":"backend-a","os":"Linux","startTime":"2026-04-01T12:24:24.247451672Z","user":"backend"}
+{"hostName":"backend-b","os":"Linux","startTime":"2026-04-01T12:27:15.525025368Z","user":"backend"}
+{"hostName":"backend-a","os":"Linux","startTime":"2026-04-01T12:24:24.247451672Z","user":"backend"}
+{"hostName":"backend-b","os":"Linux","startTime":"2026-04-01T12:27:15.525025368Z","user":"backend"}
+{"hostName":"backend-a","os":"Linux","startTime":"2026-04-01T12:24:24.247451672Z","user":"backend"}
+{"hostName":"backend-b","os":"Linux","startTime":"2026-04-01T12:27:15.525025368Z","user":"backend"}
+
+[admin@backend-b:~]$ sudo systemctl stop backend
+
+$ curl http://$INGRESS/actuator/health
+{"groups":["liveness","readiness"],"status":"UP"}
+
+$ curl http://$INGRESS/api/server-info
+{"hostName":"backend-a","os":"Linux","startTime":"2026-04-01T12:24:24.247451672Z","user":"backend"}
+```
+
+Output copied from the recorded run on Google Cloud, with the ingress address replaced by `$INGRESS`.
+
+<details>
+<summary>Watch the full recording (3 min 8 sec)</summary>
+<br>
 
 <p align="center">
   <img src="docs/media/backend-failover.gif" alt="Full failover walkthrough: requests reach both backends, one service stops, and the ingress health check stays UP." width="820">
@@ -28,72 +80,82 @@ What happens to a restaurant order when a backend goes offline? Our team built a
 
 At **1:00**, repeated requests through nginx show both backend hostnames. Around **2:00**, after one backend service stops, the ingress health check returns `UP`. The next request shows which backend is answering.
 
-<a name="frontend-demo"></a>
-
-### Restaurant ordering · 9 sec
-
-<p align="center">
-  <img src="docs/media/frontend-demo.gif" alt="Restaurant ordering walkthrough: search for Luna Pasta Bar, open its menu, add a dish, and review the cart." width="700">
-</p>
-
-Search for **Luna Pasta Bar**, open its menu, add a dish, and review the cart. The frontend uses a sample Dublin catalogue and keeps the cart in browser state.
-
-<p align="center">
-  <a href="docs/media/restaurants.png"><img src="docs/media/restaurants.png" alt="The full restaurant browser, including the filters and both rows of Dublin restaurants" width="700"></a>
-</p>
-
----
+</details>
 
 <a name="system-architecture"></a>
 
 ## Architecture
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/media/architecture-dark.svg">
+    <img src="docs/media/architecture-light.svg" width="100%" alt="Deployed architecture: customers reach an nginx ingress in us-central1-a, which load-balances between backend-a in zone A and backend-b in zone B. Both backends query the Citus coordinator, which distributes queries to db-worker-1 and db-worker-2. A monitoring node runs Prometheus, Loki, and Grafana.">
+  </picture>
+</p>
+
 nginx routes a request to either Spring Boot backend. Both backends query a PostgreSQL **Citus coordinator**, which sends distributed queries to the workers. Prometheus collects metrics, Loki stores logs, and Grafana displays them on a separate monitoring node.
 
-<p align="center">
-  <a href="docs/media/backend-architecture.png"><img src="docs/media/backend-architecture.png" alt="Full multi-region design from DNS and ingress through Spring Boot, Citus, and monitoring" width="760"></a>
-</p>
+On Google Cloud, I placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring.
 
-### Google Cloud deployment
-
-I placed a backend and a database worker in each zone. Zone A also hosted ingress, the coordinator, and monitoring. The console snapshot shows all seven instances running.
+<details>
+<summary>See all seven instances running in the Compute Engine console</summary>
+<br>
 
 <p align="center">
-  <a href="docs/media/gcp-nodes.png"><img src="docs/media/gcp-nodes.png" alt="Full Compute Engine console showing seven running VMs across zones A and B" width="700"></a>
+  <a href="docs/media/gcp-nodes.png"><img src="docs/media/gcp-nodes-table.png" alt="Compute Engine VM list showing backend-a, backend-b, db-coordinator, db-worker-1, db-worker-2, ingress, and monitoring running across us-central1-a and us-central1-b" width="760"></a>
 </p>
 
-[Node definitions](nix/nodes.nix) · [Ingress retry policy](nix/nixos-modules/nginx-ingress.nix) · [Architecture notes](docs/src/infrastructure/architecture.md)
+</details>
 
----
+[Node definitions](nix/nodes.nix) · [Ingress retry policy](nix/nixos-modules/nginx-ingress.nix) · [Architecture notes](docs/src/infrastructure/architecture.md) · [Original multi-region design](docs/media/backend-architecture.png)
 
 ## REST API
 
 The API defines **14 operations** for authentication, restaurants, and orders. The diagram follows a customer from registration to checkout, then shows how staff retrieve pending orders and update their status.
 
-<p align="center">
-  <a href="docs/media/order-sequence.png"><img src="docs/media/order-sequence.png" alt="Full REST sequence diagram showing customer, API, database, and staff interactions" width="700"></a>
-</p>
+```mermaid
+sequenceDiagram
+    actor Customer
+    participant API
+    participant DB
+    actor Staff
+
+    Customer->>API: POST /auth/register
+    API->>DB: Create user (CUSTOMER role)
+    API-->>Customer: 201 User created
+    Customer->>API: POST /auth/login
+    API-->>Customer: 200 JWT token
+    Customer->>API: GET /restaurants
+    API-->>Customer: Paginated restaurant list
+    Customer->>API: POST /orders
+    Note right of API: Requires JWT
+    API->>DB: Create order (pending)
+    API-->>Customer: 201 Order created
+    Staff->>API: GET /orders?status=pending
+    Staff->>API: PUT /orders/{id} (preparing→ready→completed)
+```
 
 <details>
 <summary>View the OpenAPI specification in Swagger Editor</summary>
+<br>
 
 <p align="center">
-  <a href="docs/media/openapi.png"><img src="docs/media/openapi.png" alt="Swagger Editor with the source YAML and its rendered endpoint list side by side" width="700"></a>
+  <a href="docs/media/openapi.png"><img src="docs/media/openapi.png" alt="Swagger Editor with the source YAML and its rendered endpoint list side by side" width="760"></a>
 </p>
 
 </details>
 
 [Explore the interactive reference](https://editor.swagger.io/?url=https%3A%2F%2Fraw.githubusercontent.com%2FDevEnjoysMath%2Fmulti-region-cloud-system%2Fmain%2Fspecs%2Fopenapi.yaml) · [OpenAPI YAML](specs/openapi.yaml) · [Contract tests](nix/checks/health.nix)
 
----
-
 ## My role
 
-**Dev Joshi · Cloud & DevOps Engineer**
+**Dev Joshi, Cloud & DevOps Engineer**
 
-- **Database** : I worked on the distributed PostgreSQL configuration and documented how the coordinator and workers fit into the architecture. [Implementation](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea)
-- **Credentials** : I integrated encrypted database credentials into service startup so PostgreSQL could apply them after it was ready. [Database module](nix/nixos-modules/postgres-service.nix)
-- **Monitoring** : I added a VM test that starts Prometheus, Grafana, and Loki together and checks their services and ports. [Monitoring test](nix/checks/monitoring.nix)
+| Area        | What I did                                                                                                                   | Code                                                                                        |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| Database    | Worked on the distributed PostgreSQL configuration and documented how the coordinator and workers fit into the architecture. | [Implementation](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea) |
+| Credentials | Integrated encrypted database credentials into service startup so PostgreSQL could apply them after it was ready.            | [Database module](nix/nixos-modules/postgres-service.nix)                                   |
+| Monitoring  | Added a VM test that starts Prometheus, Grafana, and Loki together and checks their services and ports.                      | [Monitoring test](nix/checks/monitoring.nix)                                                |
 
 <a name="team-and-contributions"></a>
 
@@ -105,21 +167,20 @@ The API defines **14 operations** for authentication, restaurants, and orders. T
 
 <details>
 <summary>Explore all eight contributors and their work</summary>
+<br>
 
-| Contributor | Project role | Selected work |
-| --- | --- | --- |
-| Xiaofan Bu | Frontend Lead | [Scaffolded the login and signup components](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/5d0f0f8). |
-| Ayush | Backend Lead | [Implemented JWT-based signup and login](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/ce09ec6). |
-| Luke Bailey | DevOps Lead | [Packaged Schemathesis for API testing](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/b485b15). |
-| Daniel Schwer | Frontend Engineer | [Added photos to the restaurant browser](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/77361f3). |
-| Noah Scolard | Frontend Engineer | [Connected the frontend routes and added page transitions](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/fe2c574). |
-| Erin Ryan | Frontend Engineer | [Built the menu, cart, and checkout UI](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/a01f4d9). |
-| Dev Joshi | Cloud & DevOps Engineer | [Added distributed PostgreSQL and documented the architecture](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea). |
-| Darragh | Backend Engineer | [Implemented the restaurant and order APIs with JPA and integration tests](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/cab0410). |
+| Contributor   | Project role            | Selected work                                                                                                                                          |
+| ------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Xiaofan Bu    | Frontend Lead           | [Scaffolded the login and signup components](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/5d0f0f8).                               |
+| Ayush         | Backend Lead            | [Implemented JWT-based signup and login](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/ce09ec6).                                   |
+| Luke Bailey   | DevOps Lead             | [Packaged Schemathesis for API testing](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/b485b15).                                    |
+| Daniel Schwer | Frontend Engineer       | [Added photos to the restaurant browser](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/77361f3).                                   |
+| Noah Scolard  | Frontend Engineer       | [Connected the frontend routes and added page transitions](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/fe2c574).                 |
+| Erin Ryan     | Frontend Engineer       | [Built the menu, cart, and checkout UI](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/a01f4d9).                                    |
+| Dev Joshi     | Cloud & DevOps Engineer | [Added distributed PostgreSQL and documented the architecture](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/21f94ea).             |
+| Darragh       | Backend Engineer        | [Implemented the restaurant and order APIs with JPA and integration tests](https://github.com/DevEnjoysMath/multi-region-cloud-system/commit/cab0410). |
 
 </details>
-
----
 
 ## Run locally
 
@@ -134,10 +195,16 @@ nix run .#compose
 
 Process Compose starts the Bun frontend, Spring Boot backend, and PostgreSQL database. Open the URL printed by the frontend process and visit `/dashboard` to follow the recorded walkthrough.
 
-| Command | Purpose |
-| --- | --- |
-| `nix fmt` | Apply the repository formatters before pushing. |
-| `nix flake check -L` | Build the frontend and backend, run tests and VM checks, and check formatting. |
+| Command                | Purpose                                                                                                        |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `nix fmt`              | Apply the repository formatters before pushing.                                                                |
+| `nix flake check -L`   | Build the frontend and backend, run tests and VM checks, and check formatting.                                 |
 | `nix run .#docs.serve` | Serve the project documentation locally, including generated JavaDoc, TypeDoc, and OpenAPI reference material. |
 
-When dependencies change, regenerate the relevant Nix lock data with `bun2nix -o bun.nix` in `frontend/` or `gradle2nix` in `backend/`. [Browse the project documentation in this repository](docs/src/SUMMARY.md)
+When dependencies change, regenerate the relevant Nix lock data with `bun2nix -o bun.nix` in `frontend/` or `gradle2nix` in `backend/`. [Browse the project documentation in this repository](docs/src/SUMMARY.md).
+
+---
+
+<p align="center">
+  Released under the <a href="LICENSE.md">MIT License</a>.
+</p>
